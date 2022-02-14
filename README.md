@@ -1,5 +1,9 @@
 # Fluid Surface Estimation 💦
 
+![GitHub contributors](https://img.shields.io/github/contributors/poly-ai/fluid-surface-estimation?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/poly-ai/fluid-surface-estimation?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/poly-ai/fluid-surface-estimation?style=for-the-badge)
+
 Fluid surface height map estimation outputs the next frame in a series of heightmaps.
 
 ## Getting started
