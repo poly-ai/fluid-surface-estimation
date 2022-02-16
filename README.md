@@ -19,7 +19,7 @@ cd ./fluid-surface-estimation
 ```
 
 #### Use a virtual environment
-Use the [venv](https://docs.python.org/3/library/venv.html) module to create a virtual environment. Note that `/env` is included in `.gitignore`).
+Use the [venv](https://docs.python.org/3/library/venv.html) module to create a virtual environment. Note that `/env` is included in `.gitignore`.
 ```
 python3 -m venv ./env
 ```
