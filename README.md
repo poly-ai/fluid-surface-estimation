@@ -89,5 +89,5 @@ pip install -r requirements.txt
 * [@jfaro](https://github.com/jfaro)
 * [@jordan787878](https://github.com/jordan787878)
 * [@mfro](https://github.com/mfro)
-* [@shworsh](https://github.com/shworsh)
+* [@shworsh](https://github.com/shworsh): Sam Worsham
 * [@wolfm](https://github.com/wolfm)
