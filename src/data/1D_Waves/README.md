@@ -24,15 +24,20 @@ Y_train_Dif.npy stores the Y_train for Diffusion Wave.
 
 ## Training Data Structure
 X_train = (time,(Height in 2D X,Y Square Grid),Nsample), where Nsample = 3 currently
+
 Y_train = (time,(Height in 2D X,Y Square Grid))
 
 So, the i-th training data pair (X(i),Y(i)) is
+
 X_train[i,:,:,:];
+
 Y_train[i,:,:];
 
 ## Visualize i-th Training Data
 Consider the i-th Training Data. (ex/ i = 0)
+
 The Training Input Data X(i) with 3 frames is:
+
 X_train[i,:,:,0], X_train[i,:,:,1], X_train[i,:,:,2]
 
 ![X_train_i_frame0](figures/Xi_0.png) 
@@ -40,6 +45,7 @@ X_train[i,:,:,0], X_train[i,:,:,1], X_train[i,:,:,2]
 ![X_train_i_frame2](figures/Xi_2.png)
 
 The Training Label Data Y(i) is:
+
 Y_train[i,:,:]
 
 ![Y_train_1](figures/Yi.png) 
