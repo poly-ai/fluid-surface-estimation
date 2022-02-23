@@ -90,9 +90,11 @@ target/
 
 # Data
 *.npy
+*.npz
 
 # Temp
 temp*
 
-# Output
-*output*
+# Videos
+*.mp4
+*.avi
