@@ -93,3 +93,6 @@ target/
 
 # Temp
 temp*
+
+# Output
+*output*
