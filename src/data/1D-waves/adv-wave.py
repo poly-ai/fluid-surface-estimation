@@ -5,8 +5,8 @@ from PIL import Image
 
 X_TRAIN_OUTPUT = "./output/x-train-adv.npy"
 Y_TRAIN_OUTPUT = "./output/y-train-adv.npy"
-IMAGE_DIMENSION = 100
-NUM_FRAMES_PER_EXAMPLE = 5
+IMAGE_DIMENSION = 20
+NUM_FRAMES_PER_EXAMPLE = 60
 
 def save_data(data, filename):
     np.save(filename, data)
