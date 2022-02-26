@@ -1,71 +1,48 @@
 # 1D Advection and Diffusion Wave in 2D domain 
-The code generates simple training data.
+The code generates data for different wave behaviors in 2D domain.
 
-## Run Code and Extract Training Data (Advection: wave travelling)
-```
-python3 adv-wave.py
-```
+NOTE: the data processing of train_X and train_Y will be handled inside the Conv-LSTM Code. 
 
-## Run Code and Extract Training Data (Diffusion: wave spreading)
+## Run Code to generate 1D Wave (expanding in 2D domain) 
 ```
-python3 dif-wave.py
+python3 wave-1d.py
 ```
 
-## Run Code and Visualize Data (Take Inputs as the .npy files)
+## Run Code to Visualize Wave Ouput Data (Take Inputs as the .npy files)
 ```
 python3 anim-wave.py
 ```
 
-## Output Training Data Format
-x-train-adv.npy stores the x-train for Advection Wave.
-y-train-adv.npy stores the y-train for Advection Wave.
-x-train-dif.npy stores the x-train for Diffusion Wave.
-y-train-dif.npy stores the y-train for Diffusion Wave.
+## Output File Format
+wave-[label].npy
 
-## Training Data Structure
+Example:
+
+wave-sin-1.npy	represents a sin wave travelling rightward.
+
+wave-dif-1.npy	represents a diffusion wave spreading from the center.
+
+wave-1.npy	represents a combination of traveling sin wave and spreading diffusion wave.
+
+## Output Wave Data Structure
+3-dimensional tensor
+
+[FRAME,[Height values in 2D Array]];
+
+Example:
 ```
-x-train = (example, frame height, frame width, num samples) // where num samples = 3 currently
+data[0,:,:]
 ```
-```
-y-train = (example, frame height, frame width)
-```
+return the Height values in 2D Array at time t = 0 (of at frame 0)
 
-So, the i-th training data pair `(X(i),Y(i))` is
+## Output Data Visuallization
+![sin wave animation](animations/sin-1.gif)
 
-`X-train[i,:,:,:]`
+![diffusion wave animation](animations/dif-1.gif)
 
-`Y-train[i,:,:]`
+## Objectives
+1: Machine Learn Model that can predict a single sin wave traveling (wave-sin-1.npy)
 
-## Visualize i-th Training Data
-Consider the i-th Training Data. (ex/ i = 0)
+2: Machine Learn Model that can predict different kinds of wave behaviors (wave-sin-1.npy, wave-dif-1.npy, wave-1.npy ... etc)
 
-The Training Input Data X(i) with 3 frames is:
-
-```
-X-train[i,:,:,0], 
-X-train[i,:,:,1],
-X-train[i,:,:,2]
-```
-
-![x-train-i-frame0](figures/Xi-0.png) 
-![x-train-i-frame1](figures/Xi-1.png) 
-![x-train-i-frame2](figures/Xi-2.png)
-
-The Training Label Data Y(i) is:
-
-`Y-train[i,:,:]`
-
-![Y-train-1](figures/Yi.png) 
-
-Note that the difference between the plots is small, because the time step between each frame is small (1/100 sec)
-
-## Objective
-Given i-th Training Input Data, predict i-th Training Label Data.
-
-## Animation
-4 animations are shown, Adv-1, Adv-5, Dif-1, Dif-2
-
-![Adv-1-Anim](animations/Adv-1.gif)
-![Adv-5-Anim](animations/Adv-5.gif)
-![Dif-1-Anim](animations/Dif-1.gif)
-![Dif-2-Anim](animations/Dif-2.gif)
+Ultimate: Machine Learn Model can predict the fluid data from Shallow.py code (Real 2D Wave)
