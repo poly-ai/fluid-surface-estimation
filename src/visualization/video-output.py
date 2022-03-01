@@ -5,10 +5,10 @@ import os
 import glob
 import cv2
 
-INPUT_DATA = '../data/1D-waves/output/wave-sin-1.npy'
+INPUT_DATA = '../data/1D-waves/output/pred-sin-V1.npy'
 OUTPUT_DIR = "./temp-frames"
 OUTPUT_FRAME_PREFIX = 'frame'
-VIDEO_FILENAME = 'output.mp4'
+VIDEO_FILENAME = 'pred-sin-V1.mp4'
 FRAME_RATE = 24
 
 # Create output dir
