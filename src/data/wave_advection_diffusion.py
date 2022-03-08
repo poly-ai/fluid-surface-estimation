@@ -6,7 +6,8 @@ import math
 # ------------------------------------------------------------------------------
 IMAGE_DIMENSION = 64
 NUM_FRAMES = 1000
-DURATION = 5
+# Const
+dt = 0.01
 
 # Weights for the Linear Combination of 
 # advecation (travelling) and diffusion (spreading) waves.
@@ -47,11 +48,10 @@ def adv_dif_combined_height(x, t, w_adv, w_diff):
 # ------------------------------------------------------------------------------
 def create_wave(image_dimension=IMAGE_DIMENSION,
                             num_frames=NUM_FRAMES,
-                            duration=DURATION,
                             w_adv=W_ADV,
                             w_diff=W_DIFF):
 
-    ticks = np.linspace(0, duration, num_frames)
+    ticks = np.linspace(0, dt*num_frames, num_frames)
     spatial_coordinates_1d = np.linspace(0,2*np.pi, image_dimension)
     data_1d = np.zeros((num_frames, image_dimension))   # (time, position)
 

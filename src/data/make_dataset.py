@@ -10,8 +10,7 @@ import src.data.wave_advection_diffusion as advection_diffusion
 @click.argument('output_filepath', type=click.Path())
 @click.argument('image_dimension', type=click.INT)
 @click.argument('num_frames', type=click.INT)
-@click.argument('duration', type=click.INT)
-def main(output_filepath, image_dimension, num_frames, duration):
+def main(output_filepath, image_dimension, num_frames):
     """
     Create dataset from parameters
     Example:               OUTPUT_FILEPATH                  IMAGE_DIMENSION
@@ -20,12 +19,10 @@ def main(output_filepath, image_dimension, num_frames, duration):
     logger = logging.getLogger(__name__)
     logger.info(f'Number of frames  {num_frames}')
     logger.info(f'Image dimensions  {image_dimension} x {image_dimension}')
-    logger.info(f'Sequence duration {duration}')
 
     # Create wave data
     data = advection_diffusion.create_wave(image_dimension=image_dimension,
-                                              num_frames=num_frames,
-                                              duration=duration)
+                                              num_frames=num_frames)
     # Save output
     np.save(output_filepath, data)
     logger.info(f'Saving dataset to {output_filepath}')
