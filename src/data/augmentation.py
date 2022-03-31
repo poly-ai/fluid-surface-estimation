@@ -46,6 +46,36 @@ def aug_rand_affine(dataset):
   return(aug_rand_offset(aug_rand_scale(dataset)))
 
 
+# Random affine transofmration
+# Transforms the input dataset so that everything is between two randomly
+# chosen limits, within the range [0,1)
+def aug_random_affine_norm(dataset):
+
+  # Generate two limits into which to shift and scale the data
+  # lower limits row 0, upper limits row 1
+  rand_limits = np.sort(np.random.random_sample(size=(2,dataset.shape[0])), axis=0)
+
+  # Get mins and maxes of each sequence
+  seq_mins = dataset.min(axis=(1, 2, 3))
+  seq_maxes = dataset.max(axis=(1, 2, 3))
+
+   # Scale
+  data_spreads = seq_maxes-seq_mins
+  print("data_spreads:", data_spreads.shape)
+  limit_spreads = rand_limits[1,:] - rand_limits[0,:]
+  print("limit_spreads:", limit_spreads.shape)
+  scale_factors = data_spreads / limit_spreads
+  print("scale_factors:", scale_factors.shape)
+  dataset /= scale_factors.reshape((-1, 1, 1, 1))
+
+  # Shift
+  seq_mins /= scale_factors
+  shift_factors = rand_limits[0,:] - seq_mins
+  dataset += shift_factors.reshape((-1, 1, 1, 1))
+
+  return dataset
+
+
 # Randomly chooses pairs of sequences and adds them
 # Returns an augmented dataset the same shape as the input data
 def aug_add_random_pairs(dataset):
