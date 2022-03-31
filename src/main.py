@@ -16,7 +16,7 @@ from models.conv_LSTM.model_predict import predict_model
 # Datasets
 # Options:  wave-sine-omni.npy
 #           wave-shallow.npy
-CREATE_DATASET = True
+CREATE_DATASET = False
 DATASET_FILENAME = 'wave-sine-omni.npy' 
 
 # Pretrained models
@@ -30,10 +30,10 @@ PRE_TRAINED_MODEL_FILENAME = '../wave-sine-omni.pth'
 def main():
 
     # Create datasets
-    if CREATE_DATASET:
+    dataset_path = os.path.join(DATA_RAW_DIR, DATASET_FILENAME)
+    if CREATE_DATASET or not os.path.exists(dataset_path):
         print(f"Creating raw dataset {DATASET_FILENAME}")
-        output_filepath = os.path.join(DATA_RAW_DIR, DATASET_FILENAME) 
-        make_omni_wave_dataset(output_filepath=output_filepath,
+        make_omni_wave_dataset(output_filepath=dataset_path,
                                image_dimension=64, 
                                num_frames=100)
     
@@ -49,6 +49,7 @@ def main():
     # Load and prepare data
     print("Loading dataset")
     dataset = np.load(os.path.join(DATA_RAW_DIR, DATASET_FILENAME))
+    dataset = np.float32(dataset)
     data_to_predict = dataset[0,:,:,:]  # Will predict on first example
     train_loader, val_loader, num_examples = prepare_data(dataset, device)
     print(f"Loaded dataset {DATASET_FILENAME}")
