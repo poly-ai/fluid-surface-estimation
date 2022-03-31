@@ -1,5 +1,4 @@
 import numpy as np
-from torch import norm
 
 # Mirror all frames in a (N, S, H, W) dataset, returning the augmented data
 # axis = 2 for vertical (flip row order), 3 for horizontal (flip column order)
@@ -47,9 +46,6 @@ def aug_rand_affine(dataset):
   return(aug_rand_offset(aug_rand_scale(dataset)))
 
 
-"""
-WIP
-"""
 # Random affine transofmration
 # Transforms the input dataset so that everything is between two randomly
 # chosen limits, within the range [0,1)
