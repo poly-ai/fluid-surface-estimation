@@ -25,6 +25,9 @@ FRAMES_PER_EXAMPLE = 20
 USE_PRETRAINED_MODEL = False
 PRE_TRAINED_MODEL_FILENAME = '../wave-sine-omni.pth'
 
+# Training
+NUM_EPOCHS = 10
+
 
 #-------------------------------------------------------------------------------
 # Main
@@ -61,7 +64,6 @@ def main():
     # Normalization
     dataset = aug_random_affine_norm(dataset)
     print("dataset shape before DataLoaders:", dataset.shape)
-    dataset = dataset[:10,:,:,:]
 
     # Setup 
     data_to_predict = dataset[0,:,:,:]  # Will predict on first example
@@ -89,7 +91,14 @@ def main():
     
     # Train the model
     print("Training the model")
-    train_model(model, train_loader, val_loader, optim, criterion, num_examples, device)
+    train_model(model=model, 
+                train_loader=train_loader, 
+                val_loader=val_loader, 
+                optim=optim, 
+                criterion=criterion, 
+                num_examples=num_examples,
+                device=device,
+                num_epochs=NUM_EPOCHS)
 
     # Make a prediction
     # print("Making prediction")
