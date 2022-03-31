@@ -17,7 +17,9 @@ def make_omni_wave_dataset(output_filepath, image_dimension, num_frames):
     omni_data = []
 
     for wave_vector in adv_wave_vectors:
-        data, theta = create_adv_diff_wave(image_dimension, num_frames, adv_wave_vector=wave_vector)
+        data, theta = create_adv_diff_wave(image_dimension=image_dimension, 
+                                           num_frames=num_frames, 
+                                           adv_wave_vector=wave_vector)
         omni_data.append(data)
         print(f"Created wave data (direction: {theta}°)")
 
