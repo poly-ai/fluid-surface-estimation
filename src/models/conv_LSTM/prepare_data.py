@@ -23,7 +23,7 @@ def prepare_data(dataset, device):
     def collate(batch):
         # Add channel dim, scale pixels between 0 and 1, send to GPU
         # TODO: don't create tensor from list
-        batch = torch.tensor(batch).unsqueeze(1)     
+        batch = torch.tensor(np.array(batch)).unsqueeze(1)     
         batch = batch.to(device)
         rand = np.random.randint(NUM_INPUT_FRAMES,20)                     
         return batch[:,:,rand-NUM_INPUT_FRAMES:rand], batch[:,:,rand] # randomly extract 10 sequential frames as input, and 11-th frame as label     

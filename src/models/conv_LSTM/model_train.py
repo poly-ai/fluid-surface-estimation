@@ -10,7 +10,7 @@ def train_model(model, train_loader, val_loader, optim,
     SAVED_MODEL_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'pretrained-model.pt')
 
     num_epochs = 1 # can change this number to train more
-    best_val_loss = 10000 
+    best_val_loss = 100000000
 
     improved = False
     error_factor = 255 # Jordan: I found this will improve the training
@@ -25,6 +25,7 @@ def train_model(model, train_loader, val_loader, optim,
 
     # Training
     for epoch in range(1, num_epochs+1):
+        print("Starting epoch", epoch)
         train_loss = 0                                                 
         model.train()
 
