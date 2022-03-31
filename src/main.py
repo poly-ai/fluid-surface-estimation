@@ -5,6 +5,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from definitions import DATA_RAW_DIR, PRE_TRAINED_MODEL_DIR
 from data.make_dataset import make_omni_wave_dataset
+from data.augmentation import aug_random_affine_norm
 from models.conv_LSTM.Seq2Seq import Seq2Seq
 from models.conv_LSTM.prepare_data import prepare_data
 from models.conv_LSTM.model_train import train_model
@@ -17,7 +18,8 @@ from models.conv_LSTM.model_predict import predict_model
 # Options:  wave-sine-omni.npy
 #           wave-shallow.npy
 CREATE_DATASET = False
-DATASET_FILENAME = 'wave-sine-omni.npy' 
+DATASET_FILENAME = 'wave-sine-omni.npy'
+FRAMES_PER_EXAMPLE = 20
 
 # Pretrained models
 USE_PRETRAINED_MODEL = False
@@ -35,7 +37,7 @@ def main():
         print(f"Creating raw dataset {DATASET_FILENAME}")
         make_omni_wave_dataset(output_filepath=dataset_path,
                                image_dimension=64, 
-                               num_frames=100)
+                               num_frames=1000)
     
     # TODO: Augment data
     print("Creating augmented data")
@@ -46,10 +48,22 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("device:", device)
 
-    # Load and prepare data
+    # Load data
     print("Loading dataset")
-    dataset = np.load(os.path.join(DATA_RAW_DIR, DATASET_FILENAME))
+    dataset = np.load(os.path.join(DATA_RAW_DIR, DATASET_FILENAME)) # (8,100,64,64)
     dataset = np.float32(dataset)
+
+    # Reshape data
+    frames_per_video = dataset.shape[1]
+    assert(frames_per_video % FRAMES_PER_EXAMPLE is 0)
+    dataset = np.reshape(dataset, (-1, FRAMES_PER_EXAMPLE, 64, 64))
+
+    # Normalization
+    dataset = aug_random_affine_norm(dataset)
+    print("dataset shape before DataLoaders:", dataset.shape)
+    dataset = dataset[:10,:,:,:]
+
+    # Setup 
     data_to_predict = dataset[0,:,:,:]  # Will predict on first example
     train_loader, val_loader, num_examples = prepare_data(dataset, device)
     print(f"Loaded dataset {DATASET_FILENAME}")
@@ -78,8 +92,8 @@ def main():
     train_model(model, train_loader, val_loader, optim, criterion, num_examples, device)
 
     # Make a prediction
-    print("Making prediction")
-    predict_model(model, data_to_predict, device)
+    # print("Making prediction")
+    # predict_model(model, data_to_predict, device)
 
 if __name__ == '__main__':
     main()
