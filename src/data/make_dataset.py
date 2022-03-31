@@ -1,37 +1,30 @@
-import click
-import logging
-from cv2 import log
 import numpy as np
-from pathlib import Path
-import src.data.wave_advection_diffusion as advection_diffusion
+from .wave_adv_omi import create_adv_diff_wave
 
+def make_omni_wave_dataset(output_filepath, image_dimension, num_frames):
 
-@click.command()
-@click.argument('output_filepath', type=click.Path())
-@click.argument('image_dimension', type=click.INT)
-@click.argument('num_frames', type=click.INT)
-def main(output_filepath, image_dimension, num_frames):
-    """
-    Create dataset from parameters
-    Example:               OUTPUT_FILEPATH                  IMAGE_DIMENSION
-    python make_dataset.py "../../data/processed/waves.npy" 64
-    """
-    logger = logging.getLogger(__name__)
-    logger.info(f'Number of frames  {num_frames}')
-    logger.info(f'Image dimensions  {image_dimension} x {image_dimension}')
+    adv_wave_vectors = [
+        [1, 0],     # 0°    →
+        [1, 1],     # 45°   ↗
+        [0, 1],     # 90°   ↑
+        [-1, 1],    # 135°  ↖
+        [-1, 0],    # 180°  ←
+        [-1, -1],   # 225°  ↙
+        [0, -1],    # 270°  ↓
+        [1, -1]     # 315°  ↘
+    ]
 
-    # Create wave data
-    data = advection_diffusion.create_wave(image_dimension=image_dimension,
-                                              num_frames=num_frames)
+    omni_data = []
+
+    for wave_vector in adv_wave_vectors:
+        data, theta = create_adv_diff_wave(image_dimension, num_frames, adv_wave_vector=wave_vector)
+        omni_data.append(data)
+        print(f"Created wave data (direction: {theta}°)")
+
+    omni_data = np.stack(omni_data)
+    print("Dataset shape:", omni_data.shape)
+
     # Save output
-    np.save(output_filepath, data)
-    logger.info(f'Saving dataset to {output_filepath}')
+    np.save(output_filepath, omni_data)
+    print(f'Saving dataset to {output_filepath}')
 
-
-if __name__ == '__main__':
-    log_fmt = '%(name)s - %(levelname)s - %(message)s'
-    logging.basicConfig(level=logging.INFO, format=log_fmt)
-
-    # Useful for finding various files
-    project_dir = Path(__file__).resolve().parents[2]
-    main()
