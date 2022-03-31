@@ -5,11 +5,10 @@ from definitions import PRE_TRAINED_MODEL_DIR
 
 
 def train_model(model, train_loader, val_loader, optim, 
-                criterion, num_examples, device):
+                criterion, num_examples, device, num_epochs):
 
     SAVED_MODEL_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'pretrained-model.pt')
 
-    num_epochs = 1 # can change this number to train more
     best_val_loss = 100000000
 
     improved = False
@@ -25,7 +24,6 @@ def train_model(model, train_loader, val_loader, optim,
 
     # Training
     for epoch in range(1, num_epochs+1):
-        print("Starting epoch", epoch)
         train_loss = 0                                                 
         model.train()
 
