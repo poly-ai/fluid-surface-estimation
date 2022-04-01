@@ -2,14 +2,15 @@ import os
 import numpy as np
 import torch
 from definitions import PRE_TRAINED_MODEL_DIR
+import matplotlib.pyplot as plt
 
 
 def train_model(model, train_loader, val_loader, optim, 
-                criterion, num_examples, device, num_epochs):
+                criterion, num_examples, device, num_epochs, save_path, best_loss=100000000):
 
-    SAVED_MODEL_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'pretrained-model.pt')
+    SAVED_MODEL_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, save_path)
 
-    best_val_loss = 100000000
+    best_val_loss = best_loss 
 
     improved = False
     error_factor = 255 # Jordan: I found this will improve the training
@@ -62,6 +63,10 @@ def train_model(model, train_loader, val_loader, optim,
 
         print("Epoch:{} Training Loss:{:4.4f} Validation Loss:{:4.4f}\n".format(epoch, train_loss, val_loss))
         
+        # Store training history (train_loss, val_loss)
+        train_loss_list.append(train_loss)
+        val_loss_list.append(val_loss)
+
         # Save model with best validation loss
         if val_loss < best_val_loss:
             state = {
@@ -69,17 +74,19 @@ def train_model(model, train_loader, val_loader, optim,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optim.state_dict(),
                 'val_loss': val_loss,
-                'train_loss': train_loss
+                'train_loss': train_loss,
+                'val_loss_history': np.array(val_loss_list),
+                'train_loss_history': np.array(train_loss_list)
             }
             improved = True
             torch.save(state, SAVED_MODEL_PATH)
-            print("Best Model Saved")
+            print("Best Model Saved to: ",SAVED_MODEL_PATH)
         
         # Auto-Save Training History (every 20 (or whatever number) epochs)
-        if epoch % 20 == 0:
-            train_loss_list.append(np.array(train_loss))
-            val_loss_list.append(np.array(val_loss))
-            # TODO: Save the train_list and val_list
+        #if epoch % 20 == 0:
+        #    train_loss_list.append(np.array(train_loss))
+        #    val_loss_list.append(np.array(val_loss))
+        #    # TODO: Save the train_list and val_list
 
     # After the Training, load the best model if it exists 
     # (For model retraining, both the model and the optimizer need to be saved)
@@ -89,4 +96,16 @@ def train_model(model, train_loader, val_loader, optim,
         model.eval()
         optim.load_state_dict(checkpoint['optimizer_state_dict'])
         best_val_loss = checkpoint['val_loss']
+        print("Show training history")
+        train_loss_history = checkpoint['train_loss_history']
+        val_loss_history = checkpoint['val_loss_history']
+        e = np.arange(train_loss_history.shape[0]) + 1
+        plt.figure(1);
+        plt.plot(e,train_loss_history)
+        plt.plot(e,val_loss_history)
+        plt.title('Train History')
+        plt.xlabel('epoch')
+        plt.ylabel('loss')
+        plt.legend(['train','val'])
+        plt.show() 
         del checkpoint

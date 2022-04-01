@@ -27,6 +27,7 @@ def predict_model(model, test_data, device):
 
         with torch.no_grad():                   # Reduce the cuda memory used
             out = model(test_input).squeeze(0)  # Predict the output
+            #print(out)
 
         # Store the output to numpy array  
         old = predict_wave[1:10,:,:].to(device)
@@ -36,9 +37,12 @@ def predict_model(model, test_data, device):
         # visualize every VISUAL_FREQ frames
         if i%VISUAL_FREQ == 0:
             print("frame:\t",i)
-            fig = plt.figure()
-            ax = plt.axes()
-            im = plt.imshow(out_wave[i+10,:,:], cmap = "gray")
+            fig, (ax1, ax2) = plt.subplots(1, 2)
+            fig.suptitle('Prediction vs CFD')
+            im = ax1.imshow(out_wave[i+10,:,:], cmap = "gray")
+            im = ax2.imshow(test_wave[i+10,:,:], cmap = "gray")
+            ax1.title.set_text('Prediction')
+            ax2.title.set_text('CFD')
             plt.show()
 
         # Clean cuda memory (just in case)
