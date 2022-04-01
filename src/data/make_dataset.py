@@ -21,7 +21,7 @@ def make_omni_wave_dataset(output_filepath, image_dimension, num_frames):
                                            num_frames=num_frames, 
                                            adv_wave_vector=wave_vector)
         omni_data.append(data)
-        print(f"Created wave data (direction: {theta}°)")
+        print(f"Created wave data (direction: {theta} degrees)")
 
     omni_data = np.stack(omni_data)
     print("Dataset shape:", omni_data.shape)
