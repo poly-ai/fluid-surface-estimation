@@ -27,7 +27,7 @@ PRE_TRAINED_MODEL_FILENAME = 'convLSTM/pretrained-model.pt'
 SAVED_MODEL_FILENAME = 'convLSTM/model1.pt'
 
 # Training
-NUM_EPOCHS = 3 
+NUM_EPOCHS = 10
 
 
 #-------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ def main():
         print(f"Creating raw dataset {DATASET_FILENAME}")
         make_omni_wave_dataset(output_filepath=dataset_path,
                                image_dimension=64, 
-                               num_frames=100)
+                               num_frames=1000)
     
     # TODO: Augment data
     print("Creating augmented data")
