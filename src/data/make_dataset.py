@@ -1,7 +1,7 @@
 import numpy as np
 from .wave_adv_omi import create_adv_diff_wave
 
-def make_omni_wave_dataset(output_filepath, image_dimension, num_frames):
+def make_omni_wave_dataset(output_filepath, image_dimension, num_frames, wave_freq):
 
     adv_wave_vectors = [
         [1, 0],     # 0°    →
@@ -19,7 +19,8 @@ def make_omni_wave_dataset(output_filepath, image_dimension, num_frames):
     for wave_vector in adv_wave_vectors:
         data, theta = create_adv_diff_wave(image_dimension=image_dimension, 
                                            num_frames=num_frames, 
-                                           adv_wave_vector=wave_vector)
+                                           adv_wave_vector=wave_vector,
+                                           adv_wave_freq=wave_freq)
         omni_data.append(data)
         print(f"Created wave data (direction: {theta} degrees)")
 

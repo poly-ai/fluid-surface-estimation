@@ -41,7 +41,8 @@ def main():
         print(f"Creating raw dataset {DATASET_FILENAME}")
         make_omni_wave_dataset(output_filepath=dataset_path,
                                image_dimension=64, 
-                               num_frames=1000)
+                               num_frames=1000,
+                               wave_freq=1)
     
     # TODO: Augment data
     print("Creating augmented data")
@@ -98,7 +99,6 @@ def main():
     if USE_PRETRAINED_MODEL:
         path_debug = os.path.join(PRE_TRAINED_MODEL_DIR, PRE_TRAINED_MODEL_FILENAME)
         print("Load Pretrained Model from path: ", path_debug)
-        #model.load_state_dict(torch.load(os.path.join(PRE_TRAINED_MODEL_DIR, PRE_TRAINED_MODEL_FILENAME), map_location=torch.device(device)))
         checkpoint = torch.load(os.path.join(PRE_TRAINED_MODEL_DIR, PRE_TRAINED_MODEL_FILENAME), map_location=device)
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
@@ -120,7 +120,7 @@ def main():
                 device=device,
                 num_epochs=NUM_EPOCHS,
                 save_path = SAVED_MODEL_FILENAME,
-#                best_loss = best_val_loss
+                best_loss = best_val_loss
                 )
 
     # Make a prediction
