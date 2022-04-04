@@ -61,11 +61,8 @@ def aug_random_affine_norm(dataset):
 
    # Scale
   data_spreads = seq_maxes-seq_mins
-  print("data_spreads:", data_spreads.shape)
   limit_spreads = rand_limits[1,:] - rand_limits[0,:]
-  print("limit_spreads:", limit_spreads.shape)
   scale_factors = data_spreads / limit_spreads
-  print("scale_factors:", scale_factors.shape)
   dataset /= scale_factors.reshape((-1, 1, 1, 1))
 
   # Shift
