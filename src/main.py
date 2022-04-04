@@ -6,6 +6,7 @@ from torch.optim import Adam
 from definitions import DATA_RAW_DIR, PRE_TRAINED_MODEL_DIR
 from data.make_dataset import make_omni_wave_dataset
 from data.augmentation import aug_random_affine_norm, aug_add_random_pairs
+from data.normalization import normalize
 from models.conv_LSTM.Seq2Seq import Seq2Seq
 from models.conv_LSTM.prepare_data import prepare_data
 from models.conv_LSTM.model_train import train_model
@@ -65,8 +66,8 @@ def main():
     assert(frames_per_video % FRAMES_PER_EXAMPLE ==  0)
     dataset = np.reshape(dataset, (-1, FRAMES_PER_EXAMPLE, 64, 64))
 
-    # Normalize un-augmented dataset
-    dataset = np.float32(((dataset*0.5)+0.5))
+    # Normalize dataset pre-augmentation
+    dataset = normalize(dataset)
 
     ### Data Augmentation ###
 
@@ -83,15 +84,12 @@ def main():
     dataset = np.vstack(aug_list)
 
     # Random-pair-sum augmentations, inside normalized random-affine augmentations
-    dataset.concatenate(aug_random_affine_norm(aug_add_random_pairs(dataset, orig_dataset_size * NUM_SUM_AUG)), axis=0)
+    dataset = np.vstack((dataset, aug_random_affine_norm(aug_add_random_pairs(dataset, orig_dataset_size * NUM_SUM_AUG))))
     
     # Normalization
-    # dataset = aug_random_affine_norm(dataset)  # found some strange operation in the data
     print("dataset shape before DataLoaders:", dataset.shape)
     print("Normalization 0~1 check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
     #########################################
-
-    import pdb; pdb.set_trace()
 
     # Setup 
     train_loader, val_loader, num_examples = prepare_data(dataset, device)
