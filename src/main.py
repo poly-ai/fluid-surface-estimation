@@ -66,8 +66,6 @@ def main():
     # Reshape data
     frames_per_video = dataset.shape[1]
 
-    import pdb; pdb.set_trace()
-
     assert(frames_per_video % FRAMES_PER_EXAMPLE ==  0)
     dataset = np.reshape(dataset, (-1, FRAMES_PER_EXAMPLE, 64, 64))
 
