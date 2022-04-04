@@ -1,5 +1,6 @@
 from itertools import combinations
 from math import floor
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,6 +10,8 @@ import matplotlib as mpl
 import time
 import sys
 from scipy.interpolate import griddata
+
+from .shallow_cfd import main
 
 def animate(i,field,h,x,y):
     try:
@@ -35,7 +38,43 @@ def ExtractH(data):
         h[:,i] = array[:,i*3]
     return h
 
-def GenerateGrid(X, Y, H, unit):
+def test():
+    data = pd.read_csv('output/Shallow_5.csv')
+    xydata = pd.read_csv('output/XY.csv')
+    Time   = pd.read_csv('output/SimTime_5.csv')
+
+    xy = xydata.to_numpy()
+    x = xy[:,0]
+    y = xy[:,1]
+    t = Time.to_numpy()
+    t = t[:,1]
+    print("Data Loaded Successfully")
+
+    # Extract height from CFD output data
+    h = ExtractH(data)
+
+    # now h matrix contains height data at every space and every time.
+    # with rows representing space   --> row i: the height data is stored at (x,y) Coordinates at (x[i], y[i])
+    #   , where (x[i],y[i]) is the coordinate of the center of each triangular mesh cell.
+    #   , (x,y) comes from tank0.gri mesh (coarse mesh)
+    # with columns representing time --> col i: the height data is stored at time step t[i]
+    # x,y domain: x (0,1.8), y(0,1.2)
+    # time domain: 0.5 sec, dt = 1e-3 sec, t-length = 500;
+
+    translate_cfd_to_grid(x, y, h, 0.01)
+
+    # Animation
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    fig.set_figheight(15)
+    fig.set_figwidth(30)
+    field = ax.scatter(x,y,h[:,0])
+    ShowAnim(fig,field,h,x,y)
+
+if __name__ == "__main__":
+    test()
+
+def translate_cfd_to_grid(X, Y, H, unit):
     # X[i] = x coordinate, i = vertex index
     # Y[i] = y coordinate, i = vertex index
     # H[i, j] = height, i = vertex index, j = time
@@ -69,58 +108,30 @@ def GenerateGrid(X, Y, H, unit):
 
         return 0
 
-    result = np.zeros((floor(max(X) / unit), floor(max(Y) / unit), H.shape[1]))
+    result = np.zeros((H.shape[1], floor(max(X) / unit), floor(max(Y) / unit)))
 
-    gX = []
-    gY = []
-    gH = []
+    for i in range(result.shape[1]):
+        print(f'{i} / {result.shape[1]}')
+        for j in range(result.shape[2]):
+            result[:, i, j] = triangle(i * unit, j * unit)
 
-    print(result.shape)
-    for i in range(result.shape[0]):
-        print(i)
-        for j in range(result.shape[1]):
-            result[i, j, :] = triangle(i * unit, j * unit)
-            gX.append(i * unit)
-            gY.append(j * unit)
-            gH.append(result[i, j, 0])
+    return result
 
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    ax.bar3d(gX, gY, np.zeros_like(gH), unit, unit, gH, shade=True)
-    plt.savefig('output.png')
+def generate_cfd_data():
+    Path('data/raw/CFD').mkdir(parents=True, exist_ok=True)
 
-def main():
-    data = pd.read_csv('output/Shallow_5.csv')
-    xydata = pd.read_csv('output/XY.csv')
-    Time   = pd.read_csv('output/SimTime_5.csv')
+    main()
+
+    data = pd.read_csv('data/raw/CFD/Shallow_fine.csv')
+    xydata = pd.read_csv('data/raw/CFD/XY_fine.csv')
+    Time   = pd.read_csv('data/raw/CFD/SimTime_fine.csv')
 
     xy = xydata.to_numpy()
     x = xy[:,0]
     y = xy[:,1]
     t = Time.to_numpy()
     t = t[:,1]
-    print("Data Loaded Successfully")
 
-    # Extract height from CFD output data
     h = ExtractH(data)
 
-    # now h matrix contains height data at every space and every time.
-    # with rows representing space   --> row i: the height data is stored at (x,y) Coordinates at (x[i], y[i])
-    #   , where (x[i],y[i]) is the coordinate of the center of each triangular mesh cell.
-    #   , (x,y) comes from tank0.gri mesh (coarse mesh)
-    # with columns representing time --> col i: the height data is stored at time step t[i]
-    # x,y domain: x (0,1.8), y(0,1.2)
-    # time domain: 0.5 sec, dt = 1e-3 sec, t-length = 500;
-
-    GenerateGrid(x, y, h, 0.01)
-
-    # Animation
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    fig.set_figheight(15)
-    fig.set_figwidth(30)
-    field = ax.scatter(x,y,h[:,0])
-    ShowAnim(fig,field,h,x,y)
-
-if __name__ == "__main__":
-    main()
+    return x, y, h
