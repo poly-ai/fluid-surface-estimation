@@ -77,10 +77,16 @@ def aug_random_affine_norm(dataset):
 
 
 # Randomly chooses pairs of sequences and adds them
+# N: number of examples in output dataset
 # Returns an augmented dataset the same shape as the input data
-def aug_add_random_pairs(dataset):
+def aug_add_random_pairs(dataset, out_size=-1):
+
+  # Handle default value
+  if out_size == -1:
+    out_size = dataset.shape[0]
+
   # Get two N-length lists of indicies, from [0, N)
-  indices_0 = np.random.randint(0, dataset.shape[0], size=(dataset.shape[0]))
-  indices_1 = np.random.randint(0, dataset.shape[0], size=(dataset.shape[0]))
+  indices_0 = np.random.randint(0, dataset.shape[0], size=out_size)
+  indices_1 = np.random.randint(0, dataset.shape[0], size=out_size)
 
   return dataset[indices_0] + dataset[indices_1]
