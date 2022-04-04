@@ -65,8 +65,8 @@ def main():
 
     # Reshape data
     frames_per_video = dataset.shape[1]
-
-    assert(frames_per_video % FRAMES_PER_EXAMPLE ==  0)
+    frames_to_remove = frames_per_video % FRAMES_PER_EXAMPLE
+    dataset = dataset[:, 0:frames_per_video-frames_to_remove, :, :]
     dataset = np.reshape(dataset, (-1, FRAMES_PER_EXAMPLE, 64, 64))
 
     # Normalize dataset pre-augmentation
