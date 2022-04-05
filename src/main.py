@@ -1,7 +1,10 @@
 import os
+import pathlib
 import numpy as np
 import torch
 import torch.nn as nn
+from enum import Enum
+import argparse
 from torch.optim import Adam
 from definitions import DATA_RAW_DIR, PRE_TRAINED_MODEL_DIR
 from data.normalization import normalize
@@ -18,9 +21,9 @@ from models.conv_LSTM.model_predict import predict_model
 # Datasets
 # Options:  wave-sine-omni.npy
 #           wave-shallow.npy
-CREATE_DATASET = False
+# CREATE_DATASET = False
 # DATASET_FILENAME = 'wave-sine-omni.npy'
-DATASET_FILENAME = 'wave-shallow.npy'
+# DATASET_FILENAME = 'wave-shallow.npy'
 FRAMES_PER_EXAMPLE = 20
 
 # Pretrained models
@@ -35,21 +38,44 @@ NUM_SUM_AUG = 2
 # Training
 NUM_EPOCHS = 10
 
+#-------------------------------------------------------------------------------
+# Enums
+#-------------------------------------------------------------------------------
+
+class ModelType(Enum):
+    ConvLSTM = 0
+    RL = 1
 
 #-------------------------------------------------------------------------------
 # Main
 #-------------------------------------------------------------------------------
 def main():
 
+    # Command-line arguments
+    parser = argparse.ArgumentParser(description="Train and test various ML models for fluid simulation.")
+    parser.add_argument("datapath", type=pathlib.Path)
+
+    args = parser.parse_args()
+
     # Create datasets
-    dataset_path = os.path.join(DATA_RAW_DIR, DATASET_FILENAME)
-    if CREATE_DATASET or not os.path.exists(dataset_path):
-        print(f"Creating raw dataset {DATASET_FILENAME}")
-        # make_omni_wave_dataset(output_filepath=dataset_path,
-        #                        image_dimension=64,
-        #                        num_frames=1000,
-        #                        wave_freq=1)
-        make_cfd_wave_dataset(output_filepath=dataset_path)
+    dataset_path = args.datapath.resolve()
+    if not dataset_path.exists():
+        print(f"Dataset not found. Generating raw dataset '{dataset_path.name}'")
+        print("Types of waves:")
+        print("    [0] Omnidirectional Sine Wave")
+        print("    [1] CFD Wave")
+        wave_type = input("Select a type of wave to generate: ")
+
+        if wave_type == "0":
+            make_omni_wave_dataset(output_filepath=dataset_path,
+                                image_dimension=64,
+                                num_frames=1000,
+                                wave_freq=1)
+        elif wave_type == "1":
+            make_cfd_wave_dataset(output_filepath=dataset_path)
+        else:
+            print("Error: Wave type was not 0 or 1")
+            return 1
 
     # PyTorch device config
     print("Configuring PyTorch GPU usage")
@@ -58,7 +84,7 @@ def main():
 
     # Load data
     print("Loading dataset")
-    dataset = np.load(os.path.join(DATA_RAW_DIR, DATASET_FILENAME)) # (8,100,64,64)
+    dataset = np.load(dataset_path) # (8,100,64,64)
     dataset = np.float32(dataset)
     data_to_predict = dataset[1,:,:,:]  # Will predict on first video
     print("data to predict shape: ", data_to_predict.shape)
@@ -96,7 +122,7 @@ def main():
 
     # Setup
     train_loader, val_loader, num_examples = prepare_data(dataset, device)
-    print(f"Loaded dataset {DATASET_FILENAME}")
+    print(f"Loaded dataset {dataset_path.name}")
 
     # Init model (input video frames are grayscale => single channel)
     print("Initializing the model")
