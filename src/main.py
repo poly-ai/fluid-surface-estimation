@@ -53,7 +53,7 @@ def main():
 
     # Command-line arguments
     parser = argparse.ArgumentParser(description="Train and test various ML models for fluid simulation.")
-    parser.add_argument("datapath", type=pathlib.Path)
+    parser.add_argument("datapath", type=pathlib.Path, help="Relative or absolute path to dataset.")
 
     args = parser.parse_args()
 
@@ -67,11 +67,13 @@ def main():
         wave_type = input("Select a type of wave to generate: ")
 
         if wave_type == "0":
+            print(f"Generating omnidirectional sine wave at '{dataset_path}'")
             make_omni_wave_dataset(output_filepath=dataset_path,
                                 image_dimension=64,
                                 num_frames=1000,
                                 wave_freq=1)
         elif wave_type == "1":
+            print(f"Generating CFD wave at '{dataset_path}'")
             make_cfd_wave_dataset(output_filepath=dataset_path)
         else:
             print("Error: Wave type was not 0 or 1")
