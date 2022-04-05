@@ -15,6 +15,7 @@ SIM_TIME = 0.1  # The total simulation time (> 500 frames)
 # Define the Initial Distribution of the Water Height
 def initial_height(x,y):
     h0 = 1.0+0.3*np.exp((-50*(x-1.3)**2)-(50*(y-0.9)**2));
+    # h0 = 1.0+0.3*np.exp((-50*(x-0.5)**2)-(50*(y-0.5)**2));
 
     # This setup will generate an avg height with 1.0
     # A single peak 1.3 height at (x=1.3,y=0.9)
@@ -114,9 +115,9 @@ def plotline(pt1,pt2):
     y = [pt1[1],pt2[1]];
     plt.plot(x,y);
 
-def main():
+def run_cfd(grifile):
     # Use Fine grid: tank1.gri
-    Mesh = readgri('src/data/CFD/tank1.gri')
+    Mesh = readgri(grifile)
 
     V = Mesh['V'];C = Mesh['E'];
     NC = np.shape(C)[0];
@@ -130,7 +131,6 @@ def main():
     df = pd.DataFrame(u);
 
     df2 = pd.DataFrame(Cent,columns=['x','y']);
-    df2.to_csv('data/raw/CFD/XY_fine.csv',sep=',',index=False)
 
     df4 = pd.DataFrame();
 
@@ -234,11 +234,6 @@ def main():
 
     print("\n##### DONE #####\n")
 
-    #WriteFile(LABEL,df,df3,df4,df5);
-    # Write the Height and Time data. df: Height. df4: Time
-    WriteFile(LABEL,df,df4);
-
-if __name__ == "__main__":
-    main()
+    return df.to_numpy(), df2.to_numpy(), df4.to_numpy()
 
 
