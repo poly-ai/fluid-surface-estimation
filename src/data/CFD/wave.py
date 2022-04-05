@@ -4,14 +4,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.tri as tri
 import matplotlib.animation as animation
-import matplotlib as mpl
 import time
 import sys
 from scipy.interpolate import griddata
 
-from .shallow_cfd import main
+from .shallow_cfd import run_cfd
 
 def animate(i,field,h,x,y):
     try:
@@ -31,11 +29,10 @@ def ShowAnim(fig,field,h,x,y):
 def ExtractH(data):
     # Shallow Data Structue is [h0,u0,v0,h1,u1,v1, ..... hT,ut,vt]
     # Since we only use height data we extract height from columns with indexes (0,3,6,9...)
-    array = data.to_numpy()
-    T = int(array.shape[1]/3)
-    h = np.zeros((array.shape[0],T))
+    T = int(data.shape[1]/3)
+    h = np.zeros((data.shape[0],T))
     for i in range(T):
-        h[:,i] = array[:,i*3]
+        h[:,i] = data[:,i*3]
     return h
 
 def test():
@@ -113,24 +110,15 @@ def translate_cfd_to_grid(X, Y, H, unit):
     for i in range(result.shape[1]):
         print(f'{i} / {result.shape[1]}')
         for j in range(result.shape[2]):
-            result[:, i, j] = triangle(i * unit, j * unit)
+            result[:, i, j] = triangle((i + 0.5) * unit, (j + 0.5) * unit)
 
     return result
 
 def generate_cfd_data():
-    Path('data/raw/CFD').mkdir(parents=True, exist_ok=True)
+    data, xy, time = run_cfd('src/data/CFD/max.gri')
 
-    main()
-
-    data = pd.read_csv('data/raw/CFD/Shallow_fine.csv')
-    xydata = pd.read_csv('data/raw/CFD/XY_fine.csv')
-    Time   = pd.read_csv('data/raw/CFD/SimTime_fine.csv')
-
-    xy = xydata.to_numpy()
     x = xy[:,0]
     y = xy[:,1]
-    t = Time.to_numpy()
-    t = t[:,1]
 
     h = ExtractH(data)
 
