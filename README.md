@@ -37,6 +37,16 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
+## Running the program
+
+After ensuring that you are in the python3 virtual environment, use the following command to run the program
+
+```
+python3 src/main.py <datapath>
+```
+
+The arguments are:
+- `datapath` - The relative or absolute path to the input data
 
 ## Project Organization
 ```
