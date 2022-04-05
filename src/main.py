@@ -18,12 +18,17 @@ from models.conv_LSTM.model_predict import predict_model
 #-------------------------------------------------------------------------------
 # Configuration
 #-------------------------------------------------------------------------------
+
+# Note to Julien - these configurations were commented out and essentially 
+# replaced with the dataset_path argument. Do with it as you see fit.
+
 # Datasets
-# Options:  wave-sine-omni.npy
-#           wave-shallow.npy
 # CREATE_DATASET = False
 # DATASET_FILENAME = 'wave-sine-omni.npy'
 # DATASET_FILENAME = 'wave-shallow.npy'
+# Options:  wave-sine-omni.npy
+#           wave-shallow.npy
+
 FRAMES_PER_EXAMPLE = 20
 
 # Pretrained models
@@ -39,14 +44,6 @@ NUM_SUM_AUG = 2
 NUM_EPOCHS = 10
 
 #-------------------------------------------------------------------------------
-# Enums
-#-------------------------------------------------------------------------------
-
-class ModelType(Enum):
-    ConvLSTM = 0
-    RL = 1
-
-#-------------------------------------------------------------------------------
 # Main
 #-------------------------------------------------------------------------------
 def main():
@@ -54,16 +51,18 @@ def main():
     # Command-line arguments
     parser = argparse.ArgumentParser(description="Train and test various ML models for fluid simulation.")
     parser.add_argument("datapath", type=pathlib.Path, help="Relative or absolute path to dataset.")
-
     args = parser.parse_args()
 
     # Create datasets
     dataset_path = args.datapath.resolve()
+
+    # If dataset not found, prompt to create a new one on specified type
     if not dataset_path.exists():
         print(f"Dataset not found. Generating raw dataset '{dataset_path.name}'")
         print("Types of waves:")
         print("    [0] Omnidirectional Sine Wave")
         print("    [1] CFD Wave")
+
         wave_type = input("Select a type of wave to generate: ")
 
         if wave_type == "0":
