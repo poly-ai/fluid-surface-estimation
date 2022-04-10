@@ -200,7 +200,8 @@ def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteri
 
       # RL Reward Function: default target frame = 200
       #WEIGHT_PLAY = 10  # Jordan 04.04 (Testing This Effect..., default: 1. Idea: encouraging playing game with more steps)
-      loss = step_error + WEIGHT_PLAY*(target_frame-i)
+      # loss = step_error + WEIGHT_PLAY*(target_frame-i)
+      loss = step_error/stop_criteria + WEIGHT_PLAY*(target_frame-i)/target_frame
 
 
       ### 2.2 Update the policy ###

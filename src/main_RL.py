@@ -30,21 +30,21 @@ NUM_TRAIN_VIDEOS = 5
 
 # Training Setup 
 # Label for training
-TRAIN_ID = "Jordan_0408_7.11"
+TRAIN_ID = "8.05"
 # bool: Load pre-trained model
 ReTrain = True 
 # If Retrain == true: set the pre-trained model path
-MODEL_LOAD_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'rlCNN/Jordan_0408_7.pt')
+MODEL_LOAD_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'rlCNN/Jordan_0409_8.04.pt')
 
 TARGET_FRAME = 200
 isSave = True      # Set this to True if you want to Save Model and History
-NUM_EPOCH = 10000    # number of epochs
-RENDER_FREQ = 20   # render figures every () frames
+NUM_EPOCH = 50000    # number of epochs
+RENDER_FREQ = 40   # render figures every () frames
 RENDER_EPOCH = 5000  # render figures every () epochs
-STOP_CRITERIA = 30000
+STOP_CRITERIA = 1000
 
 # RL Hyper Parameter 
-WEIGHT_PLAY = 2 # (default: 2)
+WEIGHT_PLAY = 20 # (default: 2)
 #############################################
 
 MODEL_BEST_SAVE = os.path.join(PRE_TRAINED_MODEL_DIR, 'rlCNN/'+TRAIN_ID+'.pt')             # best model
