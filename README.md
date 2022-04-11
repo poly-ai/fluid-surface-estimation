@@ -20,6 +20,18 @@ Navigate into the source directory
 cd ./fluid-surface-estimation
 ```
 
+#### Check out the `models/` submodule
+
+Outside of the `models/` directory, run
+```
+git subomdule update --init
+```
+
+To update the `models/` submodule in the future, just run
+```
+git submodule udpate
+```
+
 #### Use a virtual environment
 Use the [venv](https://docs.python.org/3/library/venv.html) module to create a virtual environment. Note that `/env` is included in `.gitignore`.
 ```
