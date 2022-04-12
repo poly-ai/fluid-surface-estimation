@@ -116,7 +116,7 @@ def main():
     # Random-pair-sum augmentations, inside normalized random-affine augmentations
     dataset = np.vstack((dataset, aug_random_affine_norm(aug_add_random_pairs(dataset, orig_dataset_size * NUM_SUM_AUG))))
     
-    # Normalization
+    # Normalization Check
     print("dataset shape before DataLoaders:", dataset.shape)
     print("Normalization 0~1 check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
     #########################################

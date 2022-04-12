@@ -106,6 +106,9 @@ def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last
 
 
 def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteria, weight_play, device, target_frame = 200, renderfreq = 20, render = False, start_index = -1):
+  # debug #
+  print(num_videos)
+  
   ### Setup ###
   WEIGHT_PLAY = weight_play
 
