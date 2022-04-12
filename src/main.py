@@ -22,8 +22,8 @@ DATASET_FILENAME = 'wave-sine-omni.npy'
 FRAMES_PER_EXAMPLE = 20
 
 # Pretrained models
-USE_PRETRAINED_MODEL = False
-PRE_TRAINED_MODEL_FILENAME = '../wave-sine-omni.pth'
+USE_PRETRAINED_MODEL = True
+PRETRAINED_MODEL_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'pretrained-model.pt')
 
 # Training
 NUM_EPOCHS = 10
@@ -83,7 +83,7 @@ def main():
     # Use pre-trained Model (Highly suggested using the pre-trained Model to reduce the possibiliy of nan Error during training)
     #pretrained_model = torch.load(os.path.join(DATA_DIR_PATH, 'sin-omni-V2.pth'), map_location=torch.device(device))
     if USE_PRETRAINED_MODEL:
-        model.load_state_dict(torch.load(os.path.join(PRE_TRAINED_MODEL_DIR, PRE_TRAINED_MODEL_FILENAME), map_location=torch.device(device)))
+        model.load_state_dict(torch.load(PRETRAINED_MODEL_PATH, map_location=torch.device(device)))
     
     model.train()                               # Set model to training mode    
     optim = Adam(model.parameters(), lr=1e-5)   # Select optimizer
