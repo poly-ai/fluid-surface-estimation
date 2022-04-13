@@ -61,11 +61,8 @@ def aug_random_affine_norm(dataset):
 
    # Scale
   data_spreads = seq_maxes-seq_mins
-  print("data_spreads:", data_spreads.shape)
   limit_spreads = rand_limits[1,:] - rand_limits[0,:]
-  print("limit_spreads:", limit_spreads.shape)
   scale_factors = data_spreads / limit_spreads
-  print("scale_factors:", scale_factors.shape)
   dataset /= scale_factors.reshape((-1, 1, 1, 1))
 
   # Shift
@@ -77,10 +74,16 @@ def aug_random_affine_norm(dataset):
 
 
 # Randomly chooses pairs of sequences and adds them
+# N: number of examples in output dataset
 # Returns an augmented dataset the same shape as the input data
-def aug_add_random_pairs(dataset):
+def aug_add_random_pairs(dataset, out_size=-1):
+
+  # Handle default value
+  if out_size == -1:
+    out_size = dataset.shape[0]
+
   # Get two N-length lists of indicies, from [0, N)
-  indices_0 = np.random.randint(0, dataset.shape[0], size=(dataset.shape[0]))
-  indices_1 = np.random.randint(0, dataset.shape[0], size=(dataset.shape[0]))
+  indices_0 = np.random.randint(0, dataset.shape[0], size=out_size)
+  indices_1 = np.random.randint(0, dataset.shape[0], size=out_size)
 
   return dataset[indices_0] + dataset[indices_1]
