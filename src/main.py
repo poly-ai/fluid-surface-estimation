@@ -36,6 +36,10 @@ USE_PRETRAINED_MODEL = True
 PRETRAINED_MODEL_FILEPATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'ConvLSTM/pretrained-model.pt')
 SAVED_MODEL_FILEPATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'ConvLSTM/model-1.pt')
 
+# Dataset
+CREATE_DATASET = False
+DATASET_FILENAME = 'wave-shallow.npy'
+
 # Augmentation
 NUM_AFFINE_AUG = 2
 NUM_SUM_AUG = 2
@@ -48,35 +52,15 @@ NUM_EPOCHS = 10
 #-------------------------------------------------------------------------------
 def main():
 
-    # Command-line arguments
-    parser = argparse.ArgumentParser(description="Train and test various ML models for fluid simulation.")
-    parser.add_argument("datapath", type=pathlib.Path, help="Relative or absolute path to dataset.")
-    args = parser.parse_args()
-
     # Create datasets
-    dataset_path = args.datapath.resolve()
-
-    # If dataset not found, prompt to create a new one on specified type
-    if not dataset_path.exists():
-        print(f"Dataset not found. Generating raw dataset '{dataset_path.name}'")
-        print("Types of waves:")
-        print("    [0] Omnidirectional Sine Wave")
-        print("    [1] CFD Wave")
-
-        wave_type = input("Select a type of wave to generate: ")
-
-        if wave_type == "0":
-            print(f"Generating omnidirectional sine wave at '{dataset_path}'")
-            make_omni_wave_dataset(output_filepath=dataset_path,
-                                image_dimension=64,
-                                num_frames=1000,
-                                wave_freq=1)
-        elif wave_type == "1":
-            print(f"Generating CFD wave at '{dataset_path}'")
-            make_cfd_wave_dataset(output_filepath=dataset_path)
-        else:
-            print("Error: Wave type was not 0 or 1")
-            return 1
+    dataset_filepath = os.path.join(DATA_RAW_DIR, DATASET_FILENAME)
+    if CREATE_DATASET or not os.path.exists(dataset_filepath):
+        print(f"Creating raw dataset {DATASET_FILENAME}")
+        make_omni_wave_dataset(output_filepath=dataset_filepath,
+                               image_dimension=64,
+                               num_frames=1000,
+                               wave_freq=1)
+        # make_cfd_wave_dataset(output_filepath=dataset_path)
 
     # PyTorch device config
     print("Configuring PyTorch GPU usage")
@@ -85,7 +69,7 @@ def main():
 
     # Load data
     print("Loading dataset")
-    dataset = np.load(dataset_path) # (8,100,64,64)
+    dataset = np.load(dataset_filepath) # (8,100,64,64)
     dataset = np.float32(dataset)
     data_to_predict = dataset[1,:,:,:]  # Will predict on first video
     print("data to predict shape: ", data_to_predict.shape)
@@ -99,8 +83,7 @@ def main():
     # Normalize dataset pre-augmentation
     dataset = normalize(dataset)
 
-    ### Data Augmentation ###
-
+    # Data Augmentation
     print("Augmenting data")
     orig_dataset_size = dataset.shape[0]
 
@@ -119,11 +102,10 @@ def main():
     # Normalization
     print("dataset shape before DataLoaders:", dataset.shape)
     print("Normalization 0~1 check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
-    #########################################
 
     # Setup
     train_loader, val_loader, num_examples = prepare_data(dataset, device)
-    print(f"Loaded dataset {dataset_path.name}")
+    print(f"Loaded and prepared dataset {DATASET_FILENAME}")
 
     # Init model (input video frames are grayscale => single channel)
     print("Initializing the model")
