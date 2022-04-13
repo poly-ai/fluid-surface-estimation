@@ -1,50 +1,52 @@
 from itertools import combinations
 from math import floor
-from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import time
 import sys
-from scipy.interpolate import griddata
 
 from .shallow_cfd import run_cfd
 
-def animate(i,field,h,x,y):
+
+def animate(i, field, h, x, y):
     try:
-        h0 = h[:,i]
+        h0 = h[:, i]
     except:
         print("simultion ends")
         sys.exit()
     field.set_array(h0)
-    field._offsets3d = (x,y,h0)
+    field._offsets3d = (x, y, h0)
     time.sleep(0.001)
     return i
 
-def ShowAnim(fig,field,h,x,y):
-    anim = animation.FuncAnimation(fig,animate,interval=2,fargs=(field,h,x,y))
+
+def ShowAnim(fig, field, h, x, y):
+    anim = animation.FuncAnimation(fig, animate, interval=2, fargs=(field, h, x, y))
     plt.show()
+
 
 def ExtractH(data):
     # Shallow Data Structue is [h0,u0,v0,h1,u1,v1, ..... hT,ut,vt]
     # Since we only use height data we extract height from columns with indexes (0,3,6,9...)
-    T = int(data.shape[1]/3)
-    h = np.zeros((data.shape[0],T))
+    T = int(data.shape[1] / 3)
+    h = np.zeros((data.shape[0], T))
     for i in range(T):
-        h[:,i] = data[:,i*3]
+        h[:, i] = data[:, i * 3]
     return h
 
+
 def test():
-    data = pd.read_csv('output/Shallow_5.csv')
-    xydata = pd.read_csv('output/XY.csv')
-    Time   = pd.read_csv('output/SimTime_5.csv')
+    data = pd.read_csv("output/Shallow_5.csv")
+    xydata = pd.read_csv("output/XY.csv")
+    Time = pd.read_csv("output/SimTime_5.csv")
 
     xy = xydata.to_numpy()
-    x = xy[:,0]
-    y = xy[:,1]
+    x = xy[:, 0]
+    y = xy[:, 1]
     t = Time.to_numpy()
-    t = t[:,1]
+    t = t[:, 1]
     print("Data Loaded Successfully")
 
     # Extract height from CFD output data
@@ -62,14 +64,16 @@ def test():
 
     # Animation
     fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
+    ax = fig.add_subplot(projection="3d")
     fig.set_figheight(15)
     fig.set_figwidth(30)
-    field = ax.scatter(x,y,h[:,0])
-    ShowAnim(fig,field,h,x,y)
+    field = ax.scatter(x, y, h[:, 0])
+    ShowAnim(fig, field, h, x, y)
+
 
 if __name__ == "__main__":
     test()
+
 
 def translate_cfd_to_grid(X, Y, H, unit):
     # X[i] = x coordinate, i = vertex index
@@ -108,17 +112,18 @@ def translate_cfd_to_grid(X, Y, H, unit):
     result = np.zeros((H.shape[1], floor(max(X) / unit), floor(max(Y) / unit)))
 
     for i in range(result.shape[1]):
-        print(f'{i} / {result.shape[1]}')
+        print(f"{i} / {result.shape[1]}")
         for j in range(result.shape[2]):
             result[:, i, j] = triangle((i + 0.5) * unit, (j + 0.5) * unit)
 
     return result
 
-def generate_cfd_data():
-    data, xy, time = run_cfd('src/data/CFD/max.gri')
 
-    x = xy[:,0]
-    y = xy[:,1]
+def generate_cfd_data():
+    data, xy, time = run_cfd("src/data/CFD/max.gri")
+
+    x = xy[:, 0]
+    y = xy[:, 1]
 
     h = ExtractH(data)
 

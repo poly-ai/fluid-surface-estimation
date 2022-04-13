@@ -10,9 +10,9 @@ def prepare_data(dataset, device):
 
     # Train, Test, Validation splits
     num_examples = int(dataset.shape[0])
-    train_data = dataset[:int(num_examples*0.8)]         
-    val_data = dataset[int(num_examples*0.8):int(num_examples*0.9)]   
-    test_data = dataset[int(num_examples*0.9):int(num_examples)]     
+    train_data = dataset[: int(num_examples * 0.8)]
+    val_data = dataset[int(num_examples * 0.8) : int(num_examples * 0.9)]
+    test_data = dataset[int(num_examples * 0.9) : int(num_examples)]
 
     print("Training set shape   : ", train_data.shape)
     print("Validation set shape : ", val_data.shape)
@@ -23,18 +23,23 @@ def prepare_data(dataset, device):
     def collate(batch):
         # Add channel dim, scale pixels between 0 and 1, send to GPU
         # TODO: don't create tensor from list
-        batch = torch.tensor(np.array(batch)).unsqueeze(1)     
+        batch = torch.tensor(np.array(batch)).unsqueeze(1)
         batch = batch.to(device)
-        rand = np.random.randint(NUM_INPUT_FRAMES,20)                     
-        return batch[:,:,rand-NUM_INPUT_FRAMES:rand], batch[:,:,rand] # randomly extract 10 sequential frames as input, and 11-th frame as label     
+        rand = np.random.randint(NUM_INPUT_FRAMES, 20)
+        return (
+            batch[:, :, rand - NUM_INPUT_FRAMES : rand],
+            batch[:, :, rand],
+        )
+        # randomly extract 10 sequential frames as input
+        # 11-th frame is label
 
     # Note the values of the input training batch and the output are (0~1)
     # Training Data Loader
-    train_loader = DataLoader(train_data, shuffle=True, 
-                            batch_size=16, collate_fn=collate)
+    train_loader = DataLoader(
+        train_data, shuffle=True, batch_size=16, collate_fn=collate
+    )
 
     # Validation Data Loader
-    val_loader = DataLoader(val_data, shuffle=True, 
-                            batch_size=16, collate_fn=collate)
-                            
+    val_loader = DataLoader(val_data, shuffle=True, batch_size=16, collate_fn=collate)
+
     return train_loader, val_loader, num_examples
