@@ -61,8 +61,6 @@ The arguments are:
 │   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
 │
-├── docs               <- A default Sphinx project; see sphinx-doc.org for details
-│
 ├── models             <- Trained and serialized models, model predictions, or model summaries
 │
 ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
@@ -84,9 +82,6 @@ The arguments are:
 │   ├── data           <- Scripts to download or generate data
 │   │   └── make_dataset.py
 │   │
-│   ├── features       <- Scripts to turn raw data into features for modeling
-│   │   └── build_features.py
-│   │
 │   ├── models         <- Scripts to train models and then use trained models to make
 │   │   │                 predictions
 │   │   ├── predict_model.py
@@ -103,5 +98,5 @@ The arguments are:
 * [@jfaro](https://github.com/jfaro)
 * [@jordan787878](https://github.com/jordan787878)
 * [@mfro](https://github.com/mfro)
-* [@shworsh](https://github.com/shworsh): Sam Worsham
+* [@shworsh](https://github.com/shworsh)
 * [@wolfm](https://github.com/wolfm)
