@@ -62,23 +62,23 @@ def FluxFunction(UL, UR, n):
     c = np.sqrt(g * h)
 
     # eigenvalues
-    l = np.zeros(3)
-    l[0] = un
-    l[1] = un - c
-    l[2] = un + c
+    eig = np.zeros(3)
+    eig[0] = un
+    eig[1] = un - c
+    eig[2] = un + c
 
     # entropy fix
     epsilon = c * 0.05
     for i in range(3):
-        if (l[i] < epsilon) and (l[i] > -epsilon):
-            l[i] = 0.5 * (epsilon + l[i] * l[i] / epsilon)
+        if (eig[i] < epsilon) and (eig[i] > -epsilon):
+            eig[i] = 0.5 * (epsilon + eig[i] * eig[i] / epsilon)
 
     # absolute values of eigenvalues
-    l = abs(l)
+    eig = abs(eig)
 
     # combination of eigenvalues
-    s2 = 0.5 * (l[1] - l[2])
-    s3 = 0.5 * (l[1] + l[2] - 2 * l[0])
+    s2 = 0.5 * (eig[1] - eig[2])
+    s3 = 0.5 * (eig[1] + eig[2] - 2 * eig[0])
 
     # eigenvetor product generator
     G1 = du[0] * un - du[1] * n[0] - du[2] * n[1]
@@ -89,15 +89,15 @@ def FluxFunction(UL, UR, n):
 
     # flux assembly
     F = np.zeros(3)
-    F[0] = 0.5 * (FL[0] + FR[0]) - 0.5 * (l[0] * du[0] + C1)
-    F[1] = 0.5 * (FL[1] + FR[1]) - 0.5 * (l[0] * du[1] + C1 * u - C2 * n[0])
-    F[2] = 0.5 * (FL[2] + FR[2]) - 0.5 * (l[0] * du[2] + C1 * v - C2 * n[1])
+    F[0] = 0.5 * (FL[0] + FR[0]) - 0.5 * (eig[0] * du[0] + C1)
+    F[1] = 0.5 * (FL[1] + FR[1]) - 0.5 * (eig[0] * du[1] + C1 * u - C2 * n[0])
+    F[2] = 0.5 * (FL[2] + FR[2]) - 0.5 * (eig[0] * du[2] + C1 * v - C2 * n[1])
 
     # max wave speed
-    smag = max(l)
+    smag = max(eig)
 
     # max wave speed
-    smag = max(l)
+    smag = max(eig)
 
     return F, smag
 

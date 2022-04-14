@@ -7,16 +7,16 @@ from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
 # Dataset
 CREATE_DATASET = False
 DATASET_FILENAME = "wave-shallow.npy"
-FRAMES_PER_EXAMPLE=20
+FRAMES_PER_EXAMPLE = 20
 
 # Dataset augmentation
 NUM_AFFINE_AUG = 2
 NUM_SUM_AUG = 2
 
-# Model 
+# Model
 USE_PRETRAINED_MODEL = True
 TRAINED_MODEL = "ConvLSTM/pretrained-model.pt"  # Must exist within /models
-SAVED_MODEL = "ConvLSTM/model-1.pt"             # Must exist within /models
+SAVED_MODEL = "ConvLSTM/model-1.pt"  # Must exist within /models
 
 # Training
 NUM_EPOCHS = 10

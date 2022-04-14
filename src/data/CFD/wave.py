@@ -11,11 +11,12 @@ from .shallow_cfd import run_cfd
 
 
 def animate(i, field, h, x, y):
-    try:
-        h0 = h[:, i]
-    except:
-        print("simultion ends")
+
+    if i < h.shape[1]:
+        print("simulation ends")
         sys.exit()
+
+    h0 = h[:, i]
     field.set_array(h0)
     field._offsets3d = (x, y, h0)
     time.sleep(0.001)
@@ -23,13 +24,14 @@ def animate(i, field, h, x, y):
 
 
 def ShowAnim(fig, field, h, x, y):
-    anim = animation.FuncAnimation(fig, animate, interval=2, fargs=(field, h, x, y))
+    _ = animation.FuncAnimation(fig, animate, interval=2, fargs=(field, h, x, y))
     plt.show()
 
 
 def ExtractH(data):
     # Shallow Data Structue is [h0,u0,v0,h1,u1,v1, ..... hT,ut,vt]
-    # Since we only use height data we extract height from columns with indexes (0,3,6,9...)
+    # Since we only use height data we extract height from columns
+    # with indexes (0,3,6,9...)
     T = int(data.shape[1] / 3)
     h = np.zeros((data.shape[0], T))
     for i in range(T):
@@ -53,10 +55,12 @@ def test():
     h = ExtractH(data)
 
     # now h matrix contains height data at every space and every time.
-    # with rows representing space   --> row i: the height data is stored at (x,y) Coordinates at (x[i], y[i])
-    #   , where (x[i],y[i]) is the coordinate of the center of each triangular mesh cell.
+    # with rows representing space   --> row i: the height data is stored at
+    # (x,y) Coordinates at (x[i], y[i])
+    #   , where (x[i],y[i]) is the center of each triangular mesh cell.
     #   , (x,y) comes from tank0.gri mesh (coarse mesh)
-    # with columns representing time --> col i: the height data is stored at time step t[i]
+    # with columns representing time
+    #   --> col i: the height data is stored at time step t[i]
     # x,y domain: x (0,1.8), y(0,1.2)
     # time domain: 0.5 sec, dt = 1e-3 sec, t-length = 500;
 

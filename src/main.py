@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch.optim import Adam
 import config
 from data.normalization import normalize
-from data.make_dataset import make_cfd_wave_dataset, make_omni_wave_dataset
+from data.make_dataset import make_omni_wave_dataset
 from data.augmentation import aug_random_affine_norm, aug_add_random_pairs
 from models.ConvLSTM.Seq2Seq import Seq2Seq
 from models.ConvLSTM.prepare_data import prepare_data
@@ -23,7 +23,6 @@ def main():
             num_frames=1000,
             wave_freq=1,
         )
-        # make_cfd_wave_dataset(output_filepath=dataset_path)
 
     # PyTorch device config
     print("Configuring PyTorch GPU usage")
@@ -59,8 +58,7 @@ def main():
     dataset = np.vstack(aug_list)
 
     # Random-pair-sum augment. inside normalized random-affine augment.
-    aug_data = aug_add_random_pairs(dataset, 
-                                    orig_dataset_size * config.NUM_SUM_AUG)
+    aug_data = aug_add_random_pairs(dataset, orig_dataset_size * config.NUM_SUM_AUG)
     aug_data = aug_random_affine_norm(aug_data)
     dataset = np.vstack((dataset, aug_data))
 

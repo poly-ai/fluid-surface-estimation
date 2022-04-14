@@ -1,10 +1,9 @@
-from concurrent.futures import process
 from sys import argv
 import numpy as np
 import matplotlib.pyplot as plt
 from readgri import readgri
 
-# -----------------------------------------------------------
+
 def plotmesh(Mesh, fname):
     V = Mesh["V"]
     E = Mesh["E"]
@@ -20,7 +19,6 @@ def plotmesh(Mesh, fname):
     plt.close(f)
 
 
-# -----------------------------------------------------------
 def main():
     filename = "tank1.gri" if len(argv) <= 1 else argv[1]
 

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import gc
 import config
 
+
 def predict_model(model, test_data, device):
 
     test_wave = np.float32(((test_data * 0.5) + 0.5))
