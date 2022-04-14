@@ -2,10 +2,7 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 import gc
-
-PRED_FRAMES = 50  # Choose the number of frames to be predicted
-VISUAL_FREQ = 10  # Visaulize every VISUAL_FRAMES
-
+import config
 
 def predict_model(model, test_data, device):
 
@@ -14,12 +11,12 @@ def predict_model(model, test_data, device):
     predict_wave = torch.zeros(10, 64, 64)
     predict_wave[0:10, :, :] = torch.from_numpy(test_wave[0:10, :, :])
 
-    out_wave = np.zeros((10 + PRED_FRAMES, 64, 64))
+    out_wave = np.zeros((10 + config.PRED_FRAMES, 64, 64))
     out_wave[0:10, :, :] = test_wave[0:10, :, :]
     # err_wave = np.zeros((10 + PRED_FRAMES, 64, 64))
 
     # Make prediction and Visualize the prediction result
-    for i in range(0, PRED_FRAMES):
+    for i in range(0, config.PRED_FRAMES):
 
         # Prepare the input data to consistent size, and load it to cuda
         test_input = predict_wave[0:10, :, :].clone().detach()
@@ -36,7 +33,7 @@ def predict_model(model, test_data, device):
         out_wave[i + 10, :, :] = out.cpu().detach().numpy()
 
         # visualize every VISUAL_FREQ frames
-        if i % VISUAL_FREQ == 0:
+        if i % config.VISUAL_FREQ == 0:
             print("frame:\t", i)
             fig, (ax1, ax2) = plt.subplots(1, 2)
             fig.suptitle("Prediction vs CFD")

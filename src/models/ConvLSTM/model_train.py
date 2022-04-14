@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import torch
-from definitions import PRE_TRAINED_MODEL_DIR
+import config
 import matplotlib.pyplot as plt
 
 
@@ -17,8 +17,6 @@ def train_model(
     save_path,
     best_loss=100000000,
 ):
-
-    SAVED_MODEL_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, save_path)
 
     best_val_loss = best_loss
 
@@ -103,8 +101,8 @@ def train_model(
                 "train_loss_history": np.array(train_loss_list),
             }
             improved = True
-            torch.save(state, SAVED_MODEL_PATH)
-            print("Best Model Saved to: ", SAVED_MODEL_PATH)
+            torch.save(state, config.SAVED_MODEL_FILEPATH)
+            print("Best Model Saved to: ", config.SAVED_MODEL_FILEPATH)
 
         # Auto-Save Training History (every 20 (or whatever number) epochs)
         # if epoch % 20 == 0:
@@ -115,7 +113,7 @@ def train_model(
     # After the Training, load the best model if it exists
     # (For model retraining, both the model and the optimizer need to be saved)
     if improved:
-        checkpoint = torch.load(SAVED_MODEL_PATH, map_location=device)
+        checkpoint = torch.load(config.SAVED_MODEL_FILEPATH, map_location=device)
         model.load_state_dict(checkpoint["model_state_dict"])
         model.eval()
         optim.load_state_dict(checkpoint["optimizer_state_dict"])

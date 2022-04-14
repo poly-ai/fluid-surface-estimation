@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.optim import Adam
-from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
+import config
 from data.normalization import normalize
 from data.make_dataset import make_cfd_wave_dataset, make_omni_wave_dataset
 from data.augmentation import aug_random_affine_norm, aug_add_random_pairs
@@ -12,51 +12,13 @@ from models.ConvLSTM.prepare_data import prepare_data
 from models.ConvLSTM.model_train import train_model
 from models.ConvLSTM.model_predict import predict_model
 
-# -------------------------------------------------------------------------------
-# Configuration
-# -------------------------------------------------------------------------------
 
-# Note to Julien - these configurations were commented out and essentially
-# replaced with the dataset_path argument. Do with it as you see fit.
-
-# Datasets
-# CREATE_DATASET = False
-# DATASET_FILENAME = 'wave-sine-omni.npy'
-# DATASET_FILENAME = 'wave-shallow.npy'
-# Options:  wave-sine-omni.npy
-#           wave-shallow.npy
-
-FRAMES_PER_EXAMPLE = 20
-
-# Pretrained models
-USE_PRETRAINED_MODEL = True
-TRAINED_MODEL = "ConvLSTM/pretrained-model.pt"
-SAVED_MODEL = "ConvLSTM/model-1.pt"
-TRAINED_MODEL_FILEPATH = os.path.join(TRAINED_MODEL_DIR, TRAINED_MODEL)
-SAVED_MODEL_FILEPATH = os.path.join(TRAINED_MODEL_DIR, SAVED_MODEL)
-
-# Dataset
-CREATE_DATASET = False
-DATASET_FILENAME = "wave-shallow.npy"
-
-# Augmentation
-NUM_AFFINE_AUG = 2
-NUM_SUM_AUG = 2
-
-# Training
-NUM_EPOCHS = 10
-
-
-# -------------------------------------------------------------------------------
-# Main
-# -------------------------------------------------------------------------------
 def main():
     # Create datasets
-    dataset_filepath = os.path.join(DATA_RAW_DIR, DATASET_FILENAME)
-    if CREATE_DATASET or not os.path.exists(dataset_filepath):
-        print(f"Creating raw dataset {DATASET_FILENAME}")
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH):
+        print(f"Creating raw dataset {config.DATASET_FILENAME}")
         make_omni_wave_dataset(
-            output_filepath=dataset_filepath,
+            output_filepath=config.DATASET_FILEPATH,
             image_dimension=64,
             num_frames=1000,
             wave_freq=1,
@@ -70,16 +32,15 @@ def main():
 
     # Load data
     print("Loading dataset")
-    dataset = np.load(dataset_filepath)  # (8,100,64,64)
-    dataset = np.float32(dataset)
+    dataset = np.float32(np.load(config.DATASET_FILEPATH))  # (8,100,64,64)
     data_to_predict = dataset[1, :, :, :]  # Will predict on first video
     print("data to predict shape: ", data_to_predict.shape)
 
     # Reshape data
     frames_per_video = dataset.shape[1]
-    frames_to_remove = frames_per_video % FRAMES_PER_EXAMPLE
+    frames_to_remove = frames_per_video % config.FRAMES_PER_EXAMPLE
     dataset = dataset[:, 0 : frames_per_video - frames_to_remove, :, :]
-    dataset = np.reshape(dataset, (-1, FRAMES_PER_EXAMPLE, 64, 64))
+    dataset = np.reshape(dataset, (-1, config.FRAMES_PER_EXAMPLE, 64, 64))
 
     # Normalize dataset pre-augmentation
     dataset = normalize(dataset)
@@ -93,12 +54,13 @@ def main():
     aug_list.append(dataset.copy())
 
     # Normalized random-affine augmentations
-    for _ in range(0, NUM_AFFINE_AUG):
+    for _ in range(0, config.NUM_AFFINE_AUG):
         aug_list.append(aug_random_affine_norm(dataset))  # Random affine
     dataset = np.vstack(aug_list)
 
     # Random-pair-sum augment. inside normalized random-affine augment.
-    aug_data = aug_add_random_pairs(dataset, orig_dataset_size * NUM_SUM_AUG)
+    aug_data = aug_add_random_pairs(dataset, 
+                                    orig_dataset_size * config.NUM_SUM_AUG)
     aug_data = aug_random_affine_norm(aug_data)
     dataset = np.vstack((dataset, aug_data))
 
@@ -108,7 +70,7 @@ def main():
 
     # Setup
     train_loader, val_loader, num_examples = prepare_data(dataset, device)
-    print(f"Loaded and prepared dataset {DATASET_FILENAME}")
+    print(f"Loaded and prepared dataset {config.DATASET_FILENAME}")
 
     # Init model (input video frames are grayscale => single channel)
     print("Initializing the model")
@@ -131,13 +93,13 @@ def main():
 
     # Use pre-trained Model (Highly suggested using the pre-trained Model to
     # reduce the possibiliy of nan Error during training)
-    if USE_PRETRAINED_MODEL:
-        print(f"Loading pretrained model from {TRAINED_MODEL_FILEPATH}")
+    if config.USE_PRETRAINED_MODEL:
+        print(f"Loading pretrained model from {config.TRAINED_MODEL_FILEPATH}")
         state_dict = torch.load(
-            TRAINED_MODEL_FILEPATH, map_location=torch.device(device)
+            config.TRAINED_MODEL_FILEPATH, map_location=torch.device(device)
         )
         model.load_state_dict(state_dict)
-        checkpoint = torch.load(TRAINED_MODEL_FILEPATH, map_location=device)
+        checkpoint = torch.load(config.TRAINED_MODEL_FILEPATH, map_location=device)
         model.load_state_dict(checkpoint["model_state_dict"])
         model.eval()
         optim.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -159,8 +121,8 @@ def main():
         criterion=criterion,
         num_examples=num_examples,
         device=device,
-        num_epochs=NUM_EPOCHS,
-        save_path=SAVED_MODEL_FILEPATH,
+        num_epochs=config.NUM_EPOCHS,
+        save_path=config.SAVED_MODEL_FILEPATH,
         best_loss=best_val_loss,
     )
 
