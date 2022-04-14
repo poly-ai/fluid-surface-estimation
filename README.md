@@ -46,11 +46,8 @@ Set proper configuration in `/src/config.py`. This includes settings such as whe
 After ensuring that you are in the python3 virtual environment, use the following command to run the program
 
 ```
-python3 src/main.py <datapath>
+python3 src/main.py
 ```
-
-The arguments are:
-- `datapath` - The relative or absolute path to the input data
 
 ## Project Organization
 ```
