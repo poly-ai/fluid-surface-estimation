@@ -20,18 +20,6 @@ Navigate into the source directory
 cd ./fluid-surface-estimation
 ```
 
-#### Check out the `models/` submodule
-
-Outside of the `models/` directory, run
-```
-git subomdule update --init
-```
-
-To update the `models/` submodule in the future, just run
-```
-git submodule udpate
-```
-
 #### Use a virtual environment
 Use the [venv](https://docs.python.org/3/library/venv.html) module to create a virtual environment. Note that `/env` is included in `.gitignore`.
 ```
@@ -51,6 +39,10 @@ pip install -r requirements.txt
 
 ## Running the program
 
+### Configuration
+Set proper configuration in `/src/config.py`. This includes settings such as whether or not to generate a dataset or if you would like to use a pretrained model (`USE_PRETRAINED_MODEL=True`), among other options.
+
+### Run
 After ensuring that you are in the python3 virtual environment, use the following command to run the program
 
 ```
