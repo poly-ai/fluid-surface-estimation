@@ -39,14 +39,15 @@ pip install -r requirements.txt
 
 ## Running the program
 
+### Configuration
+Set proper configuration in `/src/config.py`. This includes settings such as whether or not to generate a dataset or if you would like to use a pretrained model (`USE_PRETRAINED_MODEL=True`), among other options.
+
+### Run
 After ensuring that you are in the python3 virtual environment, use the following command to run the program
 
 ```
-python3 src/main.py <datapath>
+python3 src/main.py
 ```
-
-The arguments are:
-- `datapath` - The relative or absolute path to the input data
 
 ## Project Organization
 ```
@@ -56,8 +57,6 @@ The arguments are:
 ├── data
 │   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
-│
-├── docs               <- A default Sphinx project; see sphinx-doc.org for details
 │
 ├── models             <- Trained and serialized models, model predictions, or model summaries
 │
@@ -80,9 +79,6 @@ The arguments are:
 │   ├── data           <- Scripts to download or generate data
 │   │   └── make_dataset.py
 │   │
-│   ├── features       <- Scripts to turn raw data into features for modeling
-│   │   └── build_features.py
-│   │
 │   ├── models         <- Scripts to train models and then use trained models to make
 │   │   │                 predictions
 │   │   ├── predict_model.py
@@ -99,5 +95,5 @@ The arguments are:
 * [@jfaro](https://github.com/jfaro)
 * [@jordan787878](https://github.com/jordan787878)
 * [@mfro](https://github.com/mfro)
-* [@shworsh](https://github.com/shworsh): Sam Worsham
+* [@shworsh](https://github.com/shworsh)
 * [@wolfm](https://github.com/wolfm)

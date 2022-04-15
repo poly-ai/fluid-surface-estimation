@@ -7,7 +7,7 @@ import torch.nn as nn
 from enum import Enum
 import argparse
 from torch.optim import Adam
-from definitions import DATA_RAW_DIR, PRE_TRAINED_MODEL_DIR
+from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
 from data.make_dataset import make_cfd_wave_dataset, make_omni_wave_dataset
 from data.augmentation import aug_random_affine_norm, aug_add_random_pairs
 from models.RL_CNN.cnn import *
@@ -37,7 +37,7 @@ TRAIN_ID = "9.00"
 # bool: Load pre-trained model
 ReTrain = False 
 # If Retrain == true: set the pre-trained model path
-MODEL_LOAD_PATH = os.path.join(PRE_TRAINED_MODEL_DIR, 'RL/Jordan_0409_8.04.pt')
+MODEL_LOAD_PATH = os.path.join(TRAINED_MODEL_DIR, 'RL/Jordan_0409_8.04.pt')
 
 TARGET_FRAME = 200
 isSave = False      # Set this to True if you want to Save Model and History
@@ -55,9 +55,9 @@ RANDOM_SEED = 0
 WEIGHT_PLAY = 20 # (default: 2)
 #############################################
 
-MODEL_BEST_SAVE = os.path.join(PRE_TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'.pt')             # best model
-MODEL_LAST_SAVE = os.path.join(PRE_TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'_last.pt')   # last model
-TRAIN_HIST = os.path.join(PRE_TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'.npy')
+MODEL_BEST_SAVE = os.path.join(TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'.pt')             # best model
+MODEL_LAST_SAVE = os.path.join(TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'_last.pt')   # last model
+TRAIN_HIST = os.path.join(TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'.npy')
 
 print("Best Model Save path: ", MODEL_BEST_SAVE)
 print("Last Model Save path: ", MODEL_LAST_SAVE)

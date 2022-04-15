@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import torch
-from definitions import PRE_TRAINED_MODEL_DIR
 import matplotlib.pyplot as plt
 
 def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last_path, hist_path, stop_crit, r_train, n_train_vid, t_frame, r_freq, r_epoch, n_epoch, dev, w_play, save_flag):
