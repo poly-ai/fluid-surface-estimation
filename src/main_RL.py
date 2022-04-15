@@ -49,6 +49,7 @@ STOP_CRITERIA = 1000
 # Augmentation
 NUM_AFFINE_AUG = 5
 NUM_SUM_AUG = 5
+RANDOM_SEED = 0
 
 # RL Hyper Parameter 
 WEIGHT_PLAY = 20 # (default: 2)
@@ -85,6 +86,7 @@ def main():
 
     print("Augmenting data")
     orig_dataset_size = dataset.shape[0]
+    np.random.seed(RANDOM_SEED)
 
     # Python list containing all augmentations, to contatenate at end
     aug_list = []
@@ -97,7 +99,7 @@ def main():
 
     # Random-pair-sum augmentations, inside normalized random-affine augmentations
     dataset = np.vstack((dataset, aug_random_affine_norm(aug_add_random_pairs(dataset, orig_dataset_size * NUM_SUM_AUG))))
-    
+
     # Normalization Check
     print("dataset shape before DataLoaders:", dataset.shape)
     print("Normalization 0~1 check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
