@@ -4,21 +4,24 @@ from .CFD.wave import generate_cfd_data, translate_cfd_to_grid
 from .wave_adv_omi import create_adv_diff_wave
 
 
-def make_cfd_wave_dataset(output_filepath):
+def make_cfd_wave_dataset(output_filepath, slice=True):
     path = Path(output_filepath)
 
     if not path.exists():
         x, y, h = generate_cfd_data()
         grid = translate_cfd_to_grid(x, y, h, 0.01)
 
-        data = np.array(
-            [
-                grid[:, 0:64, 0:64],
-                grid[:, 0:64, -64:],
-                grid[:, -64:, -64:],
-                grid[:, -64:, 0:64],
-            ]
-        )
+        if slice:
+            data = np.array(
+                [
+                    grid[:, 0:64, 0:64],
+                    grid[:, 0:64, -64:],
+                    grid[:, -64:, -64:],
+                    grid[:, -64:, 0:64],
+                ]
+            )
+        else:
+            data = np.array([grid])
 
         path.parent.mkdir(parents=True, exist_ok=True)
         np.save(output_filepath, data)
