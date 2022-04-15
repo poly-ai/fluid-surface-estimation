@@ -14,7 +14,7 @@ NUM_AFFINE_AUG = 2
 NUM_SUM_AUG = 2
 
 # Model
-USE_PRETRAINED_MODEL = True
+USE_PRETRAINED_MODEL = False 
 TRAINED_MODEL = "ConvLSTM/pretrained-model.pt"  # Must exist within /models
 SAVED_MODEL = "ConvLSTM/model-1.pt"  # Must exist within /models
 
