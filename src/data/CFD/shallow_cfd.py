@@ -161,8 +161,8 @@ def run_cfd(grifile):
     # Start Propogating with Time
     # while(it<=2):
     while t <= Tsim:
-        print("\niter-----------------------")
-        print(it)
+#        print("\niter-----------------------")
+#        print(it)
 
         R = np.zeros((NC, 3))
         Forces = np.zeros((6, 1))
@@ -237,7 +237,7 @@ def run_cfd(grifile):
         df4 = df4.append(pd.DataFrame(t))
         # df5 = df5.append(pd.DataFrame(rescheck));
 
-        print("current time")
+#        print("current time")
         print(t[0])
         it += 1
 

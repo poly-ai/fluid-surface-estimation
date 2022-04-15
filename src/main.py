@@ -37,7 +37,10 @@ def main():
             num_frames=1000,
         )
 
-
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
+        print("hi")
+        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
+     
     # Load data
     print("Loading dataset")
     dataset_1 = np.float32(np.load(config.DATASET_FILEPATH[0]))  
