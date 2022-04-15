@@ -43,9 +43,6 @@ def create_cir_wave(image_dimension=IMAGE_DIMENSION,
                 r = (1+(x*x+y*y)**(0.5))
                 data[k,i,j] = 1*math.cos(wave_number*r-wave_freq*t0)/(r**0.5)
 
-    # DEBUG
-    create_2D_animation(data)
-
     return data
 
 # ------------------------------------------------------------------------------

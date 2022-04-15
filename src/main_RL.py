@@ -83,7 +83,6 @@ def main():
     print("dataset load successfully")
 
     ### Data Augmentation ###
-
     print("Augmenting data")
     orig_dataset_size = dataset.shape[0]
     np.random.seed(RANDOM_SEED)
@@ -100,25 +99,9 @@ def main():
     # Random-pair-sum augmentations, inside normalized random-affine augmentations
     dataset = np.vstack((dataset, aug_random_affine_norm(aug_add_random_pairs(dataset, orig_dataset_size * NUM_SUM_AUG))))
 
-    # Normalization Check
+    # Min and Max Check
     print("dataset shape before DataLoaders:", dataset.shape)
-    print("Normalization 0~1 check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
-
-    # Shuffle order of examples
-    #np.random.shuffle(dataset)
-
-    # Render
-    """
-    d0 = dataset[87]
-    for i in range(0,500):
-        if (i)%20 == 0:
-            fig, ax1 = plt.subplots()
-            im = ax1.imshow(d0[i,:,:], cmap = "gray")
-            plt.show(block = False)
-            plt.pause(0.5)
-            plt.close()
-    """
-  
+    print("Min and Max check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
 
     # Convert to PyTorch Tensor
     dataset = torch.from_numpy(np.float32(dataset))
@@ -126,9 +109,7 @@ def main():
 
     ### Pick Training Data ###
     pick = np.arange(NUM_TRAIN_VIDEOS)
-
     input_data_train = dataset[pick]
-    #input_data_tra = input_data_tra[0:5]
     print("train data shape: ", input_data_train.shape)
 
     ### CUDA ###
