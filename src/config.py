@@ -6,7 +6,7 @@ from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
 
 # Dataset
 CREATE_DATASET = False
-DATASET_FILENAME = "wave-shallow.npy"
+DATASET_FILENAME = ["wave-omni.npy","wave-circ.npy","wave-shallow.npy"]
 FRAMES_PER_EXAMPLE = 20
 
 # Dataset augmentation
@@ -27,6 +27,6 @@ VISUAL_FREQ = 10  # Visaulize every VISUAL_FRAMES
 
 # Filepaths (for convenience)
 # NOTE: no need to modify this. Simply change values above
-DATASET_FILEPATH = os.path.join(DATA_RAW_DIR, DATASET_FILENAME)
+DATASET_FILEPATH = [os.path.join(DATA_RAW_DIR, name) for name in DATASET_FILENAME]
 TRAINED_MODEL_FILEPATH = os.path.join(TRAINED_MODEL_DIR, TRAINED_MODEL)
 SAVED_MODEL_FILEPATH = os.path.join(TRAINED_MODEL_DIR, SAVED_MODEL)

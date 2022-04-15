@@ -124,7 +124,7 @@ def translate_cfd_to_grid(X, Y, H, unit):
 
 
 def generate_cfd_data():
-    data, xy, time = run_cfd("src/data/CFD/max.gri")
+    data, xy, time = run_cfd("src/data/CFD/tank1.gri")
 
     x = xy[:, 0]
     y = xy[:, 1]

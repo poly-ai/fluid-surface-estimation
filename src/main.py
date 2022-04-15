@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch.optim import Adam
 import config
 from data.normalization import normalize
-from data.make_dataset import make_omni_wave_dataset
+from data.make_dataset import *
 from data.augmentation import aug_random_affine_norm, aug_add_random_pairs, augment
 from models.ConvLSTM.Seq2Seq import Seq2Seq
 from models.ConvLSTM.prepare_data import prepare_data
@@ -14,26 +14,38 @@ from models.ConvLSTM.model_predict import predict_model
 
 
 def main():
-    # Create datasets
-    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH):
-        print(f"Creating raw dataset {config.DATASET_FILENAME}")
-        make_omni_wave_dataset(
-            output_filepath=config.DATASET_FILEPATH,
-            image_dimension=64,
-            num_frames=1000,
-            wave_freq=1,
-        )
-
     # PyTorch device config
     print("Configuring PyTorch GPU usage")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("device:", device)
 
+    # Create datasets
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[0]):
+        print(f"Creating raw dataset {config.DATASET_FILENAME[0]}")
+        make_omni_wave_dataset(
+            output_filepath=config.DATASET_FILEPATH[0],
+            image_dimension=64,
+            num_frames=1000,
+            wave_freq=1,
+        )
+
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[1]):
+        print(f"Creating raw dataset {config.DATASET_FILENAME[1]}")
+        make_cir_wave_dataset(
+            output_filepath=config.DATASET_FILEPATH[1],
+            image_dimension=64,
+            num_frames=1000,
+        )
+
+
     # Load data
     print("Loading dataset")
-    dataset = np.float32(np.load(config.DATASET_FILEPATH))  # (8,100,64,64)
-    data_to_predict = dataset[1, :, :, :]  # Will predict on first video
-    print("data to predict shape: ", data_to_predict.shape)
+    dataset_1 = np.float32(np.load(config.DATASET_FILEPATH[0]))  
+    dataset_2 = np.float32(np.load(config.DATASET_FILEPATH[1]))  
+    dataset_3 = np.float32(np.load(config.DATASET_FILEPATH[2]))  
+
+    # Testing Different Dataset
+    return 0
 
     # Reshape data
     frames_per_video = dataset.shape[1]
@@ -111,9 +123,6 @@ def main():
         best_loss=best_val_loss,
     )
 
-    # Make a prediction
-    print("Making prediction")
-    predict_model(model, data_to_predict, device)
 
 
 if __name__ == "__main__":
