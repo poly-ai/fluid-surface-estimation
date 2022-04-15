@@ -12,6 +12,7 @@ FRAMES_PER_EXAMPLE = 20
 # Dataset augmentation
 NUM_AFFINE_AUG = 2
 NUM_SUM_AUG = 2
+RANDOM_SEED = 0
 
 # Model
 USE_PRETRAINED_MODEL = False 
