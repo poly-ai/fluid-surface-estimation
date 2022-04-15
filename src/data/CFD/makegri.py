@@ -1,4 +1,5 @@
 from math import ceil, sqrt
+from random import  uniform
 
 import numpy as np
 from readgri import writegri
@@ -8,7 +9,7 @@ minY = 0
 maxX = 1
 maxY = 1
 
-unitX = 0.02
+unitX = 0.01
 unitY = sqrt(0.75) * unitX
 
 vertices = []
@@ -42,15 +43,19 @@ for y in range(0, yRange):
             i4 -= x
             i5 -= x + 1
 
-        vertices.append([minX + x * unitX, y * unitY * 2])
+        offset = unitX * 0.3 * uniform(-1, 1)
+        if y == 0:
+            vertices.append([minX + x * unitX, y * unitY * 2])
+        else:
+            vertices.append([minX + x * unitX, y * unitY * 2 + offset])
 
         if x == 0:
-            vertices.append([minX, (y + 0.5) * unitY * 2])
+            vertices.append([minX, (y + 0.5) * unitY * 2 + offset])
 
             exterior.append([i2, i0, len(elements), 0])
             exterior.append([i4, i2, len(elements) + 2, 0])
         else:
-            vertices.append([minX + (x - 0.5) * unitX, (y + 0.5) * unitY * 2])
+            vertices.append([minX + (x - 0.5) * unitX, (y + 0.5) * unitY * 2 + offset])
 
             interior.append([i2, i0, len(elements), len(elements) - 3])
             interior.append([i4, i2, len(elements) + 2, len(elements) - 1])
