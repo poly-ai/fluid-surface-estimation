@@ -6,8 +6,8 @@ from .wave_cir import create_cir_wave
 
 def make_cir_wave_dataset(output_filepath, image_dimension, num_frames):
 
-    wave_freq_list = [1,3,5]
-    wave_number_list = [1,3,5]
+    wave_freq_list = [1,5]
+    wave_number_list = [1,5]
     x_center_list = [1,3,5]
     y_center_list = [1,3,5]
 
