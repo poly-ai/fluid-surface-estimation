@@ -225,7 +225,7 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
       epoch_done = True
 
       # Do Validation #0416
-      val_loss = train_val_loss(valid_data, num_valid_videos, policy, stop_criteria, device, x_dim, y_dim, start_index, target_frame, WEIGHT_PLAY, criterion) 
+      val_loss = train_val_loss(valid_data, num_valid_videos, policy, stop_criteria, device, x_dim, y_dim, target_frame, WEIGHT_PLAY, criterion) 
 
       # checkpoint of this epoch result
       state = {'epoch': epoch,
@@ -243,12 +243,13 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
   ### End While loop ###
 
 # 0416
-def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y_dim, start_index, target_frame, WEIGHT_PLAY, criterion):
+def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y_dim, target_frame, WEIGHT_PLAY, criterion):
     # Init
     IsStop = False
     step_error = 0
     i = 0 
     obs = torch.zeros(num_videos,10,x_dim,y_dim)
+    start_index = np.random.randint(0,1000-target_frame-20, size=num_videos)
     
     #Rand Start
     for k in range(num_videos):
@@ -282,6 +283,18 @@ def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y
       if (i) >= target_frame:
           IsStop = True
 
+    #### Last Step ####
+    with torch.no_grad():
+      act = policy(torch.clone(obs[:,0:10,:,:])).view(num_videos,1,x_dim,y_dim)
+      out = act + obs[:,9,:,:].unsqueeze(1)
+    # Update Obs (change the game situation based on the action)
+    for k in range(num_videos):
+      obs[k,0:9,:,:] = torch.clone(data_val[k,i+1+start_index[k]:i+10+start_index[k],:,:])
+    obs[:,9,:,:] = out.view(num_videos,x_dim,y_dim)
+    # Sum Step Error
+    for k in range(num_videos):
+      step_error += (criterion(255*out[k].flatten(),255*data_val[k,i+10+start_index[k],:,:].to(device).flatten()))/num_videos
+   
     ##### Return Best RL validation Loss #####
     loss = step_error/stop_criteria + WEIGHT_PLAY*(target_frame-i)/target_frame
     return loss
