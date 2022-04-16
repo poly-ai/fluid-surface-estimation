@@ -6,22 +6,25 @@ from .wave_cir import create_cir_wave
 
 def make_cir_wave_dataset(output_filepath, image_dimension, num_frames):
 
-    wave_freq_list = [1,10]
-    wave_number_list = [1,3]
-    x_center_list = [1,5]
+    wave_freq_list = [1,3,5]
+    wave_number_list = [1,3,5]
+    x_center_list = [1,3,5]
+    y_center_list = [1,3,5]
 
     cir_data = []
 
     for wave_freq in wave_freq_list:
         for wave_number in wave_number_list:
             for x_center in x_center_list:
-                print(f"create cir wave wave freq:{wave_freq}, wave number {wave_number}, x center {x_center}")
-                data = create_cir_wave(image_dimension=image_dimension, 
-                                        num_frames=num_frames, 
-                                        wave_freq=wave_freq,
-                                        wave_number=wave_number,
-                                        x_center=x_center)
-                cir_data.append(data)
+                for y_center in y_center_list:
+                    print(f"create cir wave wave freq:{wave_freq}, wave number {wave_number}, x center {x_center}, y center {y_center}")
+                    data = create_cir_wave(image_dimension=image_dimension, 
+                                           num_frames=num_frames, 
+                                           wave_freq=wave_freq,
+                                           wave_number=wave_number,
+                                           x_center=x_center,
+                                           y_center=y_center)
+                    cir_data.append(data)
     
     cir_data = np.stack(cir_data)
     # Save output
