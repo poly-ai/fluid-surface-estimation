@@ -3,9 +3,10 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
-def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last_path, hist_path, stop_crit, r_train, n_train_vid, t_frame, r_freq, r_epoch, n_epoch, dev, w_play, save_flag):
+def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last_path, hist_path, stop_crit, r_train, n_train_vid, t_frame, r_freq, r_epoch, n_epoch, dev, w_play, save_flag, valid_data, num_valid_videos): #0416
   # Init
-  epoch_loss_history = []
+  epoch_train_loss_history = [] #0416
+  epoch_valid_loss_history = [] #0416
   best_loss = np.inf
   Improved = False
   schedule_idx = 0
@@ -37,11 +38,12 @@ def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last
     policy.load_state_dict(checkpoint['model_state_dict'])
     policy.train()
     optim.load_state_dict(checkpoint['optimizer_state_dict'])
-    best_loss = checkpoint['loss']
+    best_loss = checkpoint['valid_loss']
     play_frame = checkpoint['game_step']
     print("load model from: ",MODEL_LOAD_PATH)
     print("best Play frame before training: ",play_frame)
-    print("best loss before training: ",best_loss)
+    print("best valid loss before training: ",best_loss)
+    print("best train loss before training: ",checkpoint['train_loss']) 
     del checkpoint
 
   print("START TRAINING")
@@ -55,60 +57,62 @@ def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last
 
 
     # Train the model
-    state = train_epoch(x_dim, y_dim, policy, criterion, optim, e, input_data, num_train_videos, stop_criteria, weight_play, device, target_frame, render_freq , render=torender, start_index=-1)
+    state = train_epoch(x_dim, y_dim, policy, criterion, optim, e, input_data, num_train_videos, valid_data, num_valid_videos, stop_criteria, weight_play, device, target_frame, render_freq , render=torender, start_index=-1)
   
     # Log Info
     if torender:
       print("===== Epoch =====",e)
       print("stop criteria: {:7d}".format(stop_criteria))
       print("f-frame error: {:7.0f}".format(state['final_frame_error']))
-      print("RL Best Loss:  {:7.2f}".format(best_loss))
-      print("RL Epoch Loss: {:7.2f}".format(state['loss']))
+      print("RL Best Valid Loss:  {:7.2f}".format(best_loss))
+      print("RL Epoc Valid Loss: {:7.2f}".format(state['valid_loss']))
+      print("RL Epoc Train Loss: {:7.2f}".format(state['train_loss']))
       print("Traget Frame:  {:3d}".format(state['target_frame']))
       print("Play Frame:    {:3d}".format(state['game_step']))
       print("\n")
 
     # Append the training history
-    epoch_loss_history.append(state['loss'])
+    epoch_train_loss_history.append(state['train_loss'])
+    epoch_valid_loss_history.append(state['valid_loss'])
 
     # Save Training History every 1000 epochs
     if e % render_epoch == 0 and isSave:
-      np.save(TRAIN_HIST,np.array(epoch_loss_history))
+      loss_history = np.vstack((np.array(epoch_train_loss_history),np.array(epoch_valid_loss_history)))
+      np.save(TRAIN_HIST,loss_history)
       print("history saved")
       print("Get Better Model?\t",Improved)
   
     # Save Best Model
-    if state['loss'] < best_loss and isSave:
+    if state['valid_loss'] < best_loss and isSave:
       # Save
       torch.save(state, MODEL_SAVE_PATH)
-      best_loss = state['loss']
+      best_loss = state['valid_loss']
       Improved = True
       print("***** Save Best Policy. Epoch: {:5d} ".format(state['epoch']),
-            "Final Frame Error: {:5.2f} ".format(state['final_frame_error']),
-            "Play Frame: {:4d} ".format(state['game_step']),
-            "RL Loss: {:5.2f} *****".format(state['loss']))
+            ",Final Frame Error: {:5.2f} ".format(state['final_frame_error']),
+            ",Play Frame: {:4d} ".format(state['game_step']),
+            ",RL Valid Loss: {:5.2f} ".format(state['valid_loss']),
+            ",RL Train Loss: {:5.2f} *****".format(state['train_loss']))
       
-
     ### End For Loop ###
   
   # After Training, load the best model if it exists
   if Improved:
     print("Model Improved. Load the Best Model")
     checkpoint = torch.load(MODEL_SAVE_PATH,map_location=device)
-    policy.load_state_dict(checkpoint['model_state_dict'])
-    best_loss = checkpoint['loss']
-    final_frame_error = checkpoint['final_frame_error']
-    del checkpoint
     print("Best Model Info")
-    print("RL Loss after training:\t",best_loss)
-    print("Final Frame Error (accum)",final_frame_error)
+    print("RL Valid Loss after training:\t",checkpoint['valid_loss'])
+    print("RL Train Loss after training:\t",checkpoint['train_loss'])
+    print("Final Frame Error (accum):\t",checkpoint['final_frame_error'])
+    print("Best Play Frame:\t",checkpoint['game_step'])
+    del checkpoint
 
   # Save Last Model
   torch.save(state,MODEL_LAST_PATH)
   print("last epoch save to: ",MODEL_LAST_PATH)
 
 
-def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos, stop_criteria, weight_play, device, target_frame = 200, renderfreq = 20, render = False, start_index = -1):
+def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos, valid_data, num_valid_videos, stop_criteria, weight_play, device, target_frame = 200, renderfreq = 20, render = False, start_index = -1):
   
   ### Setup ###
   WEIGHT_PLAY = weight_play
@@ -220,6 +224,9 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
       # Epoch Done (Game over flag)
       epoch_done = True
 
+      # Do Validation #0416
+      val_loss = train_val_loss(valid_data, num_valid_videos, policy, stop_criteria, device, x_dim, y_dim, start_index, target_frame, WEIGHT_PLAY, criterion) 
+
       # checkpoint of this epoch result
       state = {'epoch': epoch,
                'model_state_dict': policy.state_dict(),
@@ -227,12 +234,58 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
                'game_step':i,
                'target_frame': target_frame,
                'final_frame_error':step_error.item(),
-               'loss': loss.item(),
+               'valid_loss': val_loss.item(), #0416
+               'train_loss': loss.item(), #0416
                }
 
       return state
   
   ### End While loop ###
+
+# 0416
+def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y_dim, start_index, target_frame, WEIGHT_PLAY, criterion):
+    # Init
+    IsStop = False
+    step_error = 0
+    i = 0 
+    obs = torch.zeros(num_videos,10,x_dim,y_dim)
+    
+    #Rand Start
+    for k in range(num_videos):
+      obs[k,0:10:,:] = torch.clone(data_val[k,0+start_index[k]:10+start_index[k],:,:])
+    obs = obs.to(device)
+
+    ##### 1. Playing Loop #####
+    while IsStop == False:
+      # Policy action prediction
+      with torch.no_grad():
+        act = policy(torch.clone(obs[:,0:10,:,:])).view(num_videos,1,x_dim,y_dim) 
+        out = act + obs[:,9,:,:].unsqueeze(1)
+      
+      # Update Obs (change the game situation based on the action)
+      for k in range(num_videos):
+        obs[k,0:9,:,:] = torch.clone(data_val[k,i+1+start_index[k]:i+10+start_index[k],:,:])
+
+      obs[:,9,:,:] = out.view(num_videos,x_dim,y_dim)
+
+      # Sum Step Error
+      for k in range(num_videos):
+        step_error += (criterion(255*out[k].flatten(),255*data_val[k,i+10+start_index[k],:,:].to(device).flatten()))/num_videos
+
+      # Each Prediction Step
+      i = i+1
+
+      # Conditions when the game is terminated
+      # 1. cumulative error exceeds stop_criteria
+      if (step_error > stop_criteria):
+          IsStop = True
+      if (i) >= target_frame:
+          IsStop = True
+
+    ##### Return Best RL validation Loss #####
+    loss = step_error/stop_criteria + WEIGHT_PLAY*(target_frame-i)/target_frame
+    return loss
+
 
 def render_predict(num_videos,step,step_error,epoch,out,input,start_index):
     error_txt = " Step: {:3d}".format(step) + '\nError: {:4.2f}'.format(step_error.item())
