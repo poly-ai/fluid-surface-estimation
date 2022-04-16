@@ -20,6 +20,10 @@ def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last
   weight_play = w_play
   isSave = save_flag
 
+  # Shallow
+  x_dim = input_data.shape[2]
+  y_dim = input_data.shape[3]
+
   # Configure Path
   MODEL_LOAD_PATH = load_path
   MODEL_SAVE_PATH = save_path
@@ -51,7 +55,7 @@ def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last
 
 
     # Train the model
-    state = train_epoch(policy, criterion, optim, e, input_data, num_train_videos, stop_criteria, weight_play, device, target_frame, render_freq , render=torender, start_index=-1)
+    state = train_epoch(x_dim, y_dim, policy, criterion, optim, e, input_data, num_train_videos, stop_criteria, weight_play, device, target_frame, render_freq , render=torender, start_index=-1)
   
     # Log Info
     if torender:
@@ -104,7 +108,7 @@ def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last
   print("last epoch save to: ",MODEL_LAST_PATH)
 
 
-def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteria, weight_play, device, target_frame = 200, renderfreq = 20, render = False, start_index = -1):
+def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos, stop_criteria, weight_play, device, target_frame = 200, renderfreq = 20, render = False, start_index = -1):
   
   ### Setup ###
   WEIGHT_PLAY = weight_play
@@ -128,7 +132,7 @@ def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteri
   i = 0	# i: the step of the training (the clock of the game)
 
   # Obtain the first ten frames (Detect the first situaitons of the game)
-  obs = torch.zeros(num_videos,10,64,64)
+  obs = torch.zeros(num_videos,10,x_dim,y_dim)
   #obs[:,0:10,:,:] = torch.clone(input[:,0+start_index:10+start_index,:,:])
   #Rand Start
   for k in range(num_videos):
@@ -142,7 +146,7 @@ def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteri
     if IsStop == False:
       # Prediction (make an action)
       with torch.no_grad():
-        act = policy(torch.clone(obs[:,0:10,:,:])).view(num_videos,1,64,64) # act shape (num_videos,1,64,64)
+        act = policy(torch.clone(obs[:,0:10,:,:])).view(num_videos,1,x_dim,y_dim) # act shape (num_videos,1,64,64)
         out = act + obs[:,9,:,:].unsqueeze(1)
   
       # Update Obs (change the game situation based on the action)
@@ -151,7 +155,7 @@ def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteri
       for k in range(num_videos):
         obs[k,0:9,:,:] = torch.clone(input[k,i+1+start_index[k]:i+10+start_index[k],:,:])
 
-      obs[:,9,:,:] = out.view(num_videos,64,64) 
+      obs[:,9,:,:] = out.view(num_videos,x_dim,y_dim) 
       
       # compute the current error and sum it up (compute the current score of the game, and sum it up with the past scores)
       #step_error += criterion(255*out.flatten(),255*input[:,i+10+start_index,:,:].to(device).flatten()) /num_videos
@@ -179,7 +183,7 @@ def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteri
     # Cumulattive error exceeds stop_criteria, get the last action, compute the loss(reward), and update the policy
     # (the game stops, count the score and optimize based on the score)
     else:
-      act = policy(torch.clone(obs[:,0:10,:,:])).view(num_videos,1,64,64)
+      act = policy(torch.clone(obs[:,0:10,:,:])).view(num_videos,1,x_dim,y_dim)
       out = act + obs[:,9,:,:].unsqueeze(1)
 
       # Update Obs
@@ -188,7 +192,7 @@ def train_epoch(policy, criterion, optim, epoch, input, num_videos, stop_criteri
       for k in range(num_videos):
         obs[k,0:9,:,:] = torch.clone(input[k,i+1+start_index[k]:i+10+start_index[k],:,:])
 
-      obs[:,9,:,:] = out.view(num_videos,64,64)
+      obs[:,9,:,:] = out.view(num_videos,x_dim,y_dim)
 
       ### 2.1 RL Part ###
       #step_error += criterion(255*out.flatten(),255*input[:,i+10+start_index,:,:].to(device).flatten()) /num_videos # normalize error
