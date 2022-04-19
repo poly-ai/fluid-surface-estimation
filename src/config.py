@@ -6,7 +6,7 @@ from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
 
 # Dataset
 CREATE_DATASET = False
-DATASET_FILENAME = ["wave-omni.npy","wave-circ.npy","wave-shallow.npy"]
+DATASET_FILENAME = ["wave-omni.npy","wave-circ.npy","wave-shallow.npy", "wave-von-karman.npy"]
 FRAMES_PER_EXAMPLE = 20
 
 # Dataset augmentation
@@ -15,7 +15,7 @@ NUM_SUM_AUG = 2
 RANDOM_SEED = 0
 
 # Model
-USE_PRETRAINED_MODEL = False 
+USE_PRETRAINED_MODEL = False
 TRAINED_MODEL = "ConvLSTM/pretrained-model.pt"  # Must exist within /models
 SAVED_MODEL = "ConvLSTM/model-1.pt"  # Must exist within /models
 
