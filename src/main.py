@@ -17,12 +17,7 @@ def main():
     # Create datasets
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH):
         print(f"Creating raw dataset {config.DATASET_FILENAME}")
-        make_omni_wave_dataset(
-            output_filepath=config.DATASET_FILEPATH,
-            image_dimension=64,
-            num_frames=1000,
-            wave_freq=1,
-        )
+        make_omni_wave_dataset()
 
     # PyTorch device config
     print("Configuring PyTorch GPU usage")

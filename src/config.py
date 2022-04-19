@@ -1,8 +1,15 @@
 import os
 from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
+from src.data.wave_adv_omi import IMAGE_DIMENSION
 
 # Configuration file for driver program in main.py
 # Ensure these settings are correct before beginning training...
+
+# Dataset generation
+IMAGE_DIMENSION = 64
+NUM_FRAMES = 1000
+OMNI_WAVE_NUM_DIRECTIONS = 12       # Divide range [0°, 360°) 
+OMNI_WAVE_SPEEDS = [0.5, 1, 2, 4]
 
 # Dataset
 CREATE_DATASET = False
