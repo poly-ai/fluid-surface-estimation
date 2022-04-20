@@ -14,6 +14,7 @@ from models.ConvLSTM.model_predict import predict_model
 
 
 def main():
+    
     # PyTorch device config
     print("Configuring PyTorch GPU usage")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -40,12 +41,17 @@ def main():
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
         print("hi")
         make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
-     
+
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[3]):
+        print("hi")
+        make_von_karman_dataset(output_filepath=config.DATASET_FILEPATH[3])
+
     # Load data
     print("Loading dataset")
-    dataset_1 = np.float32(np.load(config.DATASET_FILEPATH[0]))  
-    dataset_2 = np.float32(np.load(config.DATASET_FILEPATH[1]))  
-    dataset_3 = np.float32(np.load(config.DATASET_FILEPATH[2]))  
+    dataset_1 = np.float32(np.load(config.DATASET_FILEPATH[0]))
+    dataset_2 = np.float32(np.load(config.DATASET_FILEPATH[1]))
+    dataset_3 = np.float32(np.load(config.DATASET_FILEPATH[2]))
+    dataset_4 = np.float32(np.load(config.DATASET_FILEPATH[3]))
 
     # Testing Different Dataset
     return 0
@@ -61,7 +67,7 @@ def main():
 
     # Data Augmentation
     print("Augmenting data")
-    dataset = augment(dataset, config.NUM_AFFINE_AUG, 
+    dataset = augment(dataset, config.NUM_AFFINE_AUG,
                       config.NUM_SUM_AUG, config.RANDOM_SEED)
 
     # Min and Max Check
