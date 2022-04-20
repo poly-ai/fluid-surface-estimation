@@ -102,8 +102,9 @@ def make_von_karman_dataset(output_filepath):
 
     if not path.exists():
         h = load_von_karman_dataset()
+        dataset = np.array([h])
 
         # Save output
         path.parent.mkdir(parents=True, exist_ok=True)
-        np.save(output_filepath, h)
+        np.save(output_filepath, dataset)
         print(f"Saving dataset to {output_filepath}")

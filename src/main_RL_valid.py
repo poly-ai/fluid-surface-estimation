@@ -9,7 +9,7 @@ import argparse
 from torch.optim import Adam
 from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
 import config
-from data.make_dataset import make_cfd_wave_dataset, make_omni_wave_dataset, make_cir_wave_dataset
+from data.make_dataset import make_cfd_wave_dataset, make_omni_wave_dataset, make_cir_wave_dataset, make_von_karman_dataset
 from data.augmentation import aug_random_affine_norm, aug_add_random_pairs, augment
 from models.RL_CNN.cnn import *
 from models.RL_CNN.model_train import *
@@ -29,9 +29,9 @@ DATASET_FILENAME = 'wave-sine-omni.npy'
 
 
 ### Configuration ###
-NUM_TRAIN_VIDEOS = 80 
+NUM_TRAIN_VIDEOS = 80
 
-# Training Setup 
+# Training Setup
 # Label for training
 TRAIN_ID = "test"
 # bool: Load pre-trained model
@@ -47,11 +47,11 @@ RENDER_EPOCH = 5  # render figures every () epochs
 STOP_CRITERIA = 1000
 
 # Augmentation
-NUM_AFFINE_AUG = 5  
-NUM_SUM_AUG = 5 
+NUM_AFFINE_AUG = 5
+NUM_SUM_AUG = 5
 RANDOM_SEED = 5
 
-# RL Hyper Parameter 
+# RL Hyper Parameter
 WEIGHT_PLAY = 20 # (default: 2)
 #############################################
 
@@ -88,10 +88,13 @@ def main():
 
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
         make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
-     
+
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[3]):
+        make_von_karman_dataset(output_filepath=config.DATASET_FILEPATH[3])
+
     # Load data (0: Omni, 1: Circ, 2: Shallow)
     print("Loading dataset")
-    dataset = np.load(config.DATASET_FILEPATH[0])  
+    dataset = np.load(config.DATASET_FILEPATH[0])
     print("dataset load successfully")
 
     # Data Augmentation
