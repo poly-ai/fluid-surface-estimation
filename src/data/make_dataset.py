@@ -1,7 +1,6 @@
 import math
 from pathlib import Path
 import numpy as np
-import config
 from .CFD.wave import generate_cfd_data, translate_cfd_to_grid
 from .wave_adv_omi import create_adv_diff_wave
 from .wave_cir import create_cir_wave
@@ -12,33 +11,30 @@ def adv_wave_vec_from_radians(radians):
     return [math.sin(radians), math.sin(radians)]
 
 
-def make_omni_wave_dataset(output_filepath):
-    path = Path(config.DATASET_FILEPATH)
-    wave_num_directions = config.OMNI_WAVE_NUM_DIRECTIONS
-    wave_freqs = config.OMNI_WAVE_SPEEDS
+def make_omni_wave_dataset(output_filepath:Path, num_directions, wave_freqs, image_dimension, num_frames):
 
     # Create wave direction vectors
-    wave_adv_directions = []
-    for radians in range(0, 2*math.pi, 2*math.pi / wave_num_directions):
-        wave_adv_directions.append([math.sin(radians), math.cos(radians)])
+    radians = [(i / num_directions) * 2*math.pi for i in range(0, num_directions)]
+    wave_adv_directions = [[math.sin(rad), math.cos(rad)] for rad in radians]
 
     # Create wave videos
+    omni_data = []
     for wave_vector in wave_adv_directions:
         for wave_freq in wave_freqs:
             data, theta = create_adv_diff_wave(
-                image_dimension=config.IMAGE_DIMENSION,
-                num_frames=config.NUM_FRAMES,
+                image_dimension=image_dimension,
+                num_frames=num_frames,
                 adv_wave_vector=wave_vector,
                 adv_wave_freq=wave_freq,
             )
             omni_data.append(data)
-            print(f"Created wave data (direction: {theta} degrees)")
+            print(f"Created wave data (direction: {theta} deg, freq: {wave_freq})")
 
     omni_data = np.stack(omni_data)
     print("Dataset shape:", omni_data.shape)
 
     # Save output
-    path.parent.mkdir(parents=True, exist_ok=True)
+    output_filepath.parent.mkdir(parents=True, exist_ok=True)
     np.save(output_filepath, omni_data)
     print(f"Saving dataset to {output_filepath}")
 

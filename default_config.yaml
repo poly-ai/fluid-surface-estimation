@@ -1,0 +1,43 @@
+---
+instance_id: "default"   # ID to name output files of this instance
+load_model: ~            # ID of model instance to start from, or ~ to load no model
+model_type: "rl-cnn"     # Options: conv-lstm, rl-cnn, rl-
+datasets: ["omni", "circ", "shallow", "von-karman"]
+# Options:
+    # omni - sine wave in some number of directions
+    # circ - circular wave in several different positions
+    # shallow - real CFD simulation
+    # von-karman - adapted von-karman vortex data
+
+
+num_epochs: 10
+predict_frames: 50      # Number of frames to target predicting
+visual_freq: 10         # When generating visualizations, use this frame interval
+
+val_fraction: 0.1       # Fraction of the augmented dataset used as validation
+track_val_loss: True
+force_regenerate_data: False
+save_model_and_history: True
+
+# Data Augmentation
+num_affine_aug: 0   # Number of affine augmentations
+num_sum_aug: 0      # Number of sum augmentations
+aug_seed: 5         # Random seed for augmentations
+
+# RL-Specific (Ignored if not using an RL model)
+target_frame: 200
+render_freq: 1
+render_epoch : 5        # After hoe many frames
+stop_criteria: 1000
+weight_play: 20         # Default: 20
+
+# Data Generation Settings
+image_dimension: 64
+
+# Omni-directional Wave Generation Settings
+omni_num_frames: 1000
+omni_num_directions: 8        # Divided into range [0°, 360°) 
+omni_wave_freqs: [1]     # Wave frequencies list
+
+# Circular Wave Generation Settings
+circ_num_frames: 1000

@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-import config
 import matplotlib.pyplot as plt
 
 
@@ -15,6 +14,7 @@ def train_model(
     num_epochs,
     save_path,
     best_loss=100000000,
+    config
 ):
 
     best_val_loss = best_loss

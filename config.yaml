@@ -1,0 +1,5 @@
+---
+# Run-specific config file. Use this to override default settings
+
+omni_num_directions: 1
+datasets: ["omni", "circ"]

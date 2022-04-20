@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 import gc
-import config
 
 
 def predict_model(model, test_data, device):
