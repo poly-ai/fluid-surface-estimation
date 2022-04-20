@@ -38,7 +38,7 @@ def animate_3D(frame_number, plot, ax, X, Y, data):
     plot[0] = ax.plot_surface(X, Y, data[frame_number, :, :], cmap=CMAP)
 
 
-def create_3D_animation(data, output_filepath):
+def create_3D_animation(data, output_filepath=None):
     num_frames = data.shape[0]
     height = data.shape[1]
     width = data.shape[2]
@@ -71,5 +71,7 @@ def create_3D_animation(data, output_filepath):
         frames=num_frames,
     )
 
-    anim.save(output_filepath, fps=FPS, extra_args=["-vcodec", "libx264"])
+    if output_filepath is not None:
+        anim.save(output_filepath, fps=FPS, extra_args=["-vcodec", "libx264"])
+
     plt.show()

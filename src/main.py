@@ -5,8 +5,8 @@ import torch.nn as nn
 from torch.optim import Adam
 import config
 from data.normalization import normalize
-from data.make_dataset import make_omni_wave_dataset
-from data.augmentation import aug_random_affine_norm, aug_add_random_pairs
+from data.make_dataset import *
+from data.augmentation import aug_random_affine_norm, aug_add_random_pairs, augment
 from models.ConvLSTM.Seq2Seq import Seq2Seq
 from models.ConvLSTM.prepare_data import prepare_data
 from models.ConvLSTM.model_train import train_model
@@ -14,21 +14,47 @@ from models.ConvLSTM.model_predict import predict_model
 
 
 def main():
-    # Create datasets
-    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH):
-        print(f"Creating raw dataset {config.DATASET_FILENAME}")
-        make_omni_wave_dataset()
-
+    
     # PyTorch device config
     print("Configuring PyTorch GPU usage")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("device:", device)
 
+    # Create datasets
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[0]):
+        print(f"Creating raw dataset {config.DATASET_FILENAME[0]}")
+        make_omni_wave_dataset(
+            output_filepath=config.DATASET_FILEPATH[0],
+            image_dimension=64,
+            num_frames=1000,
+            wave_freq=1,
+        )
+
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[1]):
+        print(f"Creating raw dataset {config.DATASET_FILENAME[1]}")
+        make_cir_wave_dataset(
+            output_filepath=config.DATASET_FILEPATH[1],
+            image_dimension=64,
+            num_frames=1000,
+        )
+
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
+        print("hi")
+        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
+
+    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[3]):
+        print("hi")
+        make_von_karman_dataset(output_filepath=config.DATASET_FILEPATH[3])
+
     # Load data
     print("Loading dataset")
-    dataset = np.float32(np.load(config.DATASET_FILEPATH))  # (8,100,64,64)
-    data_to_predict = dataset[1, :, :, :]  # Will predict on first video
-    print("data to predict shape: ", data_to_predict.shape)
+    dataset_1 = np.float32(np.load(config.DATASET_FILEPATH[0]))
+    dataset_2 = np.float32(np.load(config.DATASET_FILEPATH[1]))
+    dataset_3 = np.float32(np.load(config.DATASET_FILEPATH[2]))
+    dataset_4 = np.float32(np.load(config.DATASET_FILEPATH[3]))
+
+    # Testing Different Dataset
+    return 0
 
     # Reshape data
     frames_per_video = dataset.shape[1]
@@ -41,23 +67,10 @@ def main():
 
     # Data Augmentation
     print("Augmenting data")
-    orig_dataset_size = dataset.shape[0]
+    dataset = augment(dataset, config.NUM_AFFINE_AUG,
+                      config.NUM_SUM_AUG, config.RANDOM_SEED)
 
-    # Python list containing all augmentations, to contatenate at end
-    aug_list = []
-    aug_list.append(dataset.copy())
-
-    # Normalized random-affine augmentations
-    for _ in range(0, config.NUM_AFFINE_AUG):
-        aug_list.append(aug_random_affine_norm(dataset))  # Random affine
-    dataset = np.vstack(aug_list)
-
-    # Random-pair-sum augment. inside normalized random-affine augment.
-    aug_data = aug_add_random_pairs(dataset, orig_dataset_size * config.NUM_SUM_AUG)
-    aug_data = aug_random_affine_norm(aug_data)
-    dataset = np.vstack((dataset, aug_data))
-
-    # Normalization
+    # Min and Max Check
     print("dataset shape before DataLoaders:", dataset.shape)
     print("Norm 0~1 check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
 
@@ -119,9 +132,6 @@ def main():
         best_loss=best_val_loss,
     )
 
-    # Make a prediction
-    print("Making prediction")
-    predict_model(model, data_to_predict, device)
 
 
 if __name__ == "__main__":

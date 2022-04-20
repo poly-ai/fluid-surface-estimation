@@ -7,14 +7,14 @@ import pandas as pd
 # USER SPECIFY
 #############################################################
 LABEL = "fine"  # Label for the simulation
-SIM_TIME = 0.1  # The total simulation time (> 500 frames)
+SIM_TIME = 1  # The total simulation time (> 500 frames)
 # NOTE dt = 0.001 sec
 
 
 # Define the Initial Distribution of the Water Height
-def initial_height(x, y):
-    h0 = 1.0 + 0.3 * np.exp((-50 * (x - 1.3) ** 2) - (50 * (y - 0.9) ** 2))
-    # h0 = 1.0+0.3*np.exp((-50*(x-0.5)**2)-(50*(y-0.5)**2));
+def initial_height(x,y):
+    h0 = 1.0+0.3*np.exp((-50*(x-1.3)**2)-(50*(y-0.9)**2));
+    #h0 = 1.0+0.3*np.exp((-50*(x-0.5)**2)-(50*(y-0.5)**2));
 
     # This setup will generate an avg height with 1.0
     # A single peak 1.3 height at (x=1.3,y=0.9)
@@ -161,8 +161,8 @@ def run_cfd(grifile):
     # Start Propogating with Time
     # while(it<=2):
     while t <= Tsim:
-        print("\niter-----------------------")
-        print(it)
+#        print("\niter-----------------------")
+#        print(it)
 
         R = np.zeros((NC, 3))
         Forces = np.zeros((6, 1))
@@ -237,7 +237,7 @@ def run_cfd(grifile):
         df4 = df4.append(pd.DataFrame(t))
         # df5 = df5.append(pd.DataFrame(rescheck));
 
-        print("current time")
+#        print("current time")
         print(t[0])
         it += 1
 
