@@ -72,9 +72,9 @@ def main():
     else:
         MODEL_LOAD_PATH = ""
 
-    MODEL_BEST_SAVE = os.path.join(MODEL_TYPE_DIR, config['instance_id']+'.pt')             # best model
-    MODEL_LAST_SAVE = os.path.join(MODEL_TYPE_DIR, config['instance_id']+'_last.pt')   # last model
-    TRAIN_HIST = os.path.join(MODEL_TYPE_DIR, config['instance_id']+'.npy')
+    MODEL_BEST_SAVE = Path(os.path.join(MODEL_TYPE_DIR, config['instance_id']+'.pt'))             # best model
+    MODEL_LAST_SAVE = Path(os.path.join(MODEL_TYPE_DIR, config['instance_id']+'_last.pt'))   # last model
+    TRAIN_HIST = Path(os.path.join(MODEL_TYPE_DIR, config['instance_id']+'.npy'))
 
     print("Best Model Save path: ", MODEL_BEST_SAVE)
     print("Last Model Save path: ", MODEL_LAST_SAVE)

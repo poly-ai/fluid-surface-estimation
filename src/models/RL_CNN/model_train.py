@@ -2,8 +2,9 @@ import os
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last_path, hist_path, stop_crit, r_train, n_train_vid, t_frame, r_freq, r_epoch, n_epoch, dev, w_play, save_flag, valid_data, num_valid_videos): #0416
+def train_RLCNN(policy, criterion, optim, input_data, load_path:Path, save_path:Path, last_path, hist_path:Path, stop_crit, r_train, n_train_vid, t_frame, r_freq, r_epoch, n_epoch, dev, w_play, save_flag, valid_data, num_valid_videos): #0416
   # Init
   epoch_train_loss_history = [] #0416
   epoch_valid_loss_history = [] #0416
@@ -85,6 +86,7 @@ def train_RLCNN(policy, criterion, optim, input_data, load_path, save_path, last
     # Save Best Model
     if state['valid_loss'] < best_loss and isSave:
       # Save
+      os.makedirs(MODEL_SAVE_PATH.parents[0], exist_ok = True) 
       torch.save(state, MODEL_SAVE_PATH)
       best_loss = state['valid_loss']
       Improved = True
