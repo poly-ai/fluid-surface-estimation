@@ -1,0 +1,20 @@
+---
+instance_id: "shallow-subdiv"   # ID to name output files of this instance
+load_model: ~            # ID of model instance to start from, or ~ to load no model
+model_type: "rl-cnn"     # Options: conv-lstm, rl-cnn, rl-
+datasets: ["shallow-subdiv"]
+
+num_epochs: 2500
+predict_frames: 250      # Number of frames to predict
+visual_freq: 10         # When generating visualizations, use this frame interval
+
+val_fraction: 0.25       # Fraction of the augmented dataset used as validation
+track_val_loss: True
+save_model_and_history: True
+
+# RL-Specific (Ignored if not using an RL model)
+target_frame: 200
+render_freq: 10
+render_epoch : 1000
+stop_criteria: 1000
+weight_play: 20

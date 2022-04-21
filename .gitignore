@@ -100,3 +100,6 @@ temp*
 # Videos
 *.mp4
 *.avi
+
+# User config file
+config.yaml

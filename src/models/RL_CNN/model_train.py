@@ -122,6 +122,8 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
   # IsStop: flag to indicate when the cumulative error exceeds stop_criteria
   # IsDone: flag to indicate the epoch is done and the policy is updated
 
+  import pdb; pdb.set_trace()
+
   # Choose the starting index (choose which "level" to start the game)
   if start_index == -1:
     #start_index = np.random.randint(0,1000-target_frame)

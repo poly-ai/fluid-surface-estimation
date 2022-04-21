@@ -1,0 +1,32 @@
+---
+
+instance_id: "conv-lstm"          # ID to name output files of this instance
+load_model: ~                   # ID of model instance to start from, or ~ to load no model
+model_type: "conv-lstm"            # Options: conv-lstm, rl-cnn
+datasets: ["omni"]
+# Options:
+    # omni - sine wave in some number of directions
+    # circ - circular wave in several different positions
+    # shallow - real CFD simulation
+    # von-karman - adapted von-karman vortex data
+
+num_epochs: 10
+
+val_fraction: 0.1               # Fraction of the augmented dataset used as validation
+force_regenerate_data: False
+save_model_and_history: True
+
+# Data Augmentation
+num_affine_aug: 1               # Number of affine augmentations
+num_sum_aug: 1                  # Number of sum augmentations
+aug_seed: 0                     # Random seed for augmentations
+
+# General Data Generation Settings
+image_dimension: 64
+
+# Omni-directional Wave Generation Settings
+omni_num_frames: 1000
+omni_num_directions: 8          # Divided into range [0°, 360°) 
+omni_wave_freqs: [1]            # Wave frequencies list
+
+frames_per_example: 250
