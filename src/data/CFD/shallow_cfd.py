@@ -12,8 +12,8 @@ SIM_TIME = 1  # The total simulation time (> 500 frames)
 
 
 # Define the Initial Distribution of the Water Height
-def initial_height(x,y):
-    h0 = 1.0+0.3*np.exp((-50*(x-1.3)**2)-(50*(y-0.9)**2));
+def initial_height(x,y,x_center,y_center,x_distri,y_distri,height_level,height_delta):
+    h0 = height_level+ height_delta*np.exp((-x_distri*(x-x_center)**2)-(y_distri*(y-y_center)**2));
     #h0 = 1.0+0.3*np.exp((-50*(x-0.5)**2)-(50*(y-0.5)**2));
 
     # This setup will generate an avg height with 1.0
@@ -75,7 +75,7 @@ def findnorm(V, edge):
     return n
 
 
-def Centeroid(V, C):
+def Centeroid(V, C, x_center,y_center,x_distri,y_distri,height_level,height_delta):
     NC = np.shape(C)[0]
     Cent = np.zeros((NC, 2))
     u = np.zeros((NC, 3))
@@ -94,7 +94,8 @@ def Centeroid(V, C):
         #######################################################################
         # Calls the initial_height function to determine the
         # inital distribution of the water height
-        h0 = initial_height(x, y)
+        h0 = initial_height(x,y,
+                            x_center,y_center,x_distri,y_distri,height_level,height_delta)
         #######################################################################
 
         vx0 = 0
@@ -124,7 +125,7 @@ def plotline(pt1, pt2):
     plt.plot(x, y)
 
 
-def run_cfd(grifile):
+def run_cfd(grifile,x_center=1.3,y_center=0.9,x_distri=50,y_distri=50,height_level=1,height_delta=0.3):
     # Use Fine grid: tank1.gri
     Mesh = readgri(grifile)
 
@@ -133,7 +134,7 @@ def run_cfd(grifile):
     NC = np.shape(C)[0]
 
     # Centeroid of Cell and Initial States
-    Cent, u = Centeroid(V, C)
+    Cent, u = Centeroid(V, C, x_center,y_center,x_distri,y_distri,height_level,height_delta)
     # u = np.ones((NC,3)); #for test
     # u[:,1] = 0;
     # u[:,2] = 0;
