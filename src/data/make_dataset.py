@@ -88,6 +88,9 @@ def make_cfd_wave_dataset(output_filepath, slice=True):
         else:
             data = np.array([grid])
 
+        # Remove row and column of 0's
+        data = data[:,:,1:,1:]
+
         path.parent.mkdir(parents=True, exist_ok=True)
         np.save(output_filepath, data)
         print(f"Saving dataset to {output_filepath}")
