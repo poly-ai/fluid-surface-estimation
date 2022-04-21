@@ -80,8 +80,6 @@ def main():
     print("Last Model Save path: ", MODEL_LAST_SAVE)
     print("Train History Save path: ", TRAIN_HIST)
 
-    import pdb; pdb.set_trace
-
     # Create datasets
     if "omni" in config['datasets']:
         path:Path = DATASET_PATH['omni']
@@ -126,6 +124,7 @@ def main():
             print(f"Generating raw Von-Karman dataset '{path.name}'")
             make_von_karman_dataset(output_filepath=path)
 
+
     # Load data
     print("Loading dataset")
     ds_arr = [ np.load(path) for path in DATASET_PATH.values()]
@@ -164,7 +163,7 @@ def main():
     print("device:", device)
 
     # Create CNN Policy, Optimizer, Criterion Fcn
-    policy = RL_CNN().to(device)
+    policy = RL_CNN(H_in=dataset.shape[2], W_in=dataset.shape[3]).to(device)
     policy.apply(init_weights)
     optim = Adam(policy.parameters(), lr=1e-4)
     criterion = nn.MSELoss(reduction='mean')
