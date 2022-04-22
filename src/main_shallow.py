@@ -88,6 +88,7 @@ def main():
         )
 
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
+        print(f"Creating raw dataset {config.DATASET_FILENAME[2]}")
         make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
      
     # Load data (0: Omni, 1: Circ, 2: Shallow)
@@ -99,12 +100,11 @@ def main():
     dataset = dataset[0,:,1:x_dim+1,1:y_dim+1]
     print("raw dataset load successfully")
     print("raw dataset shape: ", dataset.shape)
+
+    return 0
     
     # Data Augmentation
     print("Augmenting data")
-    #dataset = augment(dataset, NUM_AFFINE_AUG, NUM_SUM_AUG, RANDOM_SEED)
-    dataset = np.stack((dataset,dataset,dataset,dataset,dataset,
-                        dataset,dataset,dataset,dataset,dataset), axis = 0)
 
     # Min and Max Check
     print("dataset shape after augmentation:", dataset.shape)
