@@ -5,7 +5,7 @@ import config
 from .CFD.wave import generate_cfd_data, translate_cfd_to_grid
 from .wave_adv_omi import create_adv_diff_wave
 from .wave_cir import create_cir_wave
-from .von_karman import load_von_karman_dataset
+#from .von_karman import load_von_karman_dataset
 
 
 def adv_wave_vec_from_radians(radians):
@@ -76,8 +76,15 @@ def make_cir_wave_dataset(output_filepath, image_dimension, num_frames):
 def make_cfd_wave_dataset(output_filepath, slice=True):
     path = Path(output_filepath)
 
+    x_center = 0.5
+    y_center = 0.5
+    x_distri = 100
+    y_distri = 100
+    height_level = 0.6
+    height_delta = 0.6
+
     if not path.exists():
-        x, y, h = generate_cfd_data()
+        x, y, h = generate_cfd_data(x_center, y_center, x_distri, y_distri, height_level, height_delta)
         grid = translate_cfd_to_grid(x, y, h, 0.01)
 
         if slice:
