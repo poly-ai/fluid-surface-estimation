@@ -45,10 +45,10 @@ def make_omni_wave_dataset(output_filepath):
 
 def make_cir_wave_dataset(output_filepath, image_dimension, num_frames):
 
-    wave_freq_list = [1,5]
-    wave_number_list = [1,5]
+    wave_freq_list = [1,3]
+    wave_number_list = [1,3]
     x_center_list = [1,3,5]
-    y_center_list = [1,3,5]
+    y_center_list = [2,4]
 
     cir_data = []
 
@@ -99,11 +99,15 @@ def make_cfd_wave_dataset(output_filepath, slice=True):
         else:
             data = np.array([grid])
 
+	# Cut 2 problematic edge
+        x_dim = data.shape[2]-1
+        x_dim = data.shape[2]-1
+        data = data[:,:,1:x_dim+1,1:y_dim+1]
         path.parent.mkdir(parents=True, exist_ok=True)
         np.save(output_filepath, data)
         print(f"Saving dataset to {output_filepath}")
 
-
+'''
 def make_von_karman_dataset(output_filepath):
     path = Path(output_filepath)
 
@@ -115,3 +119,4 @@ def make_von_karman_dataset(output_filepath):
         path.parent.mkdir(parents=True, exist_ok=True)
         np.save(output_filepath, dataset)
         print(f"Saving dataset to {output_filepath}")
+'''
