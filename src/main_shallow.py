@@ -37,9 +37,9 @@ MODEL_LOAD_PATH = os.path.join(TRAINED_MODEL_DIR, 'RL/12.00.pt')
 
 TARGET_FRAME = 200
 isSave = True        # Set this to True if you want to Save Model and History
-NUM_EPOCH = 5    # number of epochs
-RENDER_FREQ = 1     # print info every () frames
-RENDER_EPOCH = 1  # save train history every () epochs
+NUM_EPOCH = 5000    # number of epochs
+RENDER_FREQ = 10     # print info every () frames
+RENDER_EPOCH = 50  # save train history every () epochs
 STOP_CRITERIA = 1000
 
 # Augmentation
