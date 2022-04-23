@@ -242,16 +242,19 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
 
 # 0416
 def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y_dim, target_frame, WEIGHT_PLAY, criterion):
+    # Setup
+    num_frames = data_val.shape[1]
+
     # Init
     IsStop = False
     step_error = 0
     i = 0 
     obs = torch.zeros(num_videos,10,x_dim,y_dim)
-    start_index = np.random.randint(0,1000-target_frame-20, size=num_videos)
+    start_index = np.random.randint(0,num_frames-target_frame-20, size=num_videos)
     
     #Rand Start
     for k in range(num_videos):
-      obs[k,0:10:,:] = torch.clone(data_val[k,0+start_index[k]:10+start_index[k],:,:])
+      obs[k,0:10,:,:] = torch.clone(data_val[k,0+start_index[k]:10+start_index[k],:,:])
     obs = obs.to(device)
 
     ##### 1. Playing Loop #####

@@ -83,7 +83,7 @@ def main():
 
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
         print(f"Creating raw dataset {config.DATASET_FILENAME[2]}")
-        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], num_videos = 10, slice=False)
+        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], num_videos = 40, slice=False)
      
     # Load data (0: Omni, 1: Circ, 2: Shallow)
     print("Loading dataset")
@@ -124,7 +124,7 @@ def main():
     #             kernels_2=60, pad_2=1, kern_sz_2=5, stride_2=1,
     #             pool_sz_2=2,
     #             h_3=4096, h_4=4096, frames_out=1)
-    policy = RL_CNN(H_in=178,W_in=118,h_4=178*118).to(device)
+    policy = RL_CNN(H_in=88,W_in=58,h_4=88*58).to(device)
     policy.apply(init_weights)
     optim = Adam(policy.parameters(), lr=1e-4)
     criterion = nn.MSELoss(reduction='mean')

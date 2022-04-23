@@ -88,7 +88,7 @@ def make_cfd_wave_dataset(output_filepath, num_videos = 2, slice=True):
         print("x center {:3.1f}, y center {:3.1f}, x distri {:3d}, y distri {:3d}, h level {:3.1f}, h delta {:3.1f}"
               .format(x_center, y_center, x_distri, y_distri, height_level, height_delta))
         x, y, h = generate_cfd_data(x_center, y_center, x_distri, y_distri, height_level, height_delta)
-        grid = translate_cfd_to_grid(x, y, h, 0.05)
+        grid = translate_cfd_to_grid(x, y, h, 0.02)
         wave = np.array([grid])
         data.append(wave[0])
 
