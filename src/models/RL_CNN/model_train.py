@@ -116,15 +116,15 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
   
   ### Setup ###
   WEIGHT_PLAY = weight_play
+  num_frames = input.shape[1]
 
   # IsStop: flag to indicate when the cumulative error exceeds stop_criteria
   # IsDone: flag to indicate the epoch is done and the policy is updated
 
   # Choose the starting index (choose which "level" to start the game)
   if start_index == -1:
-    #start_index = np.random.randint(0,1000-target_frame)
     #Rand Start
-    start_index = np.random.randint(0,1000-target_frame-20, size=num_videos)
+    start_index = np.random.randint(0,num_frames-target_frame-20, size = num_videos)
   if render:
     print("\ncheck epoch: ", epoch)
     #print("start index: ", start_index)
@@ -137,10 +137,9 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
 
   # Obtain the first ten frames (Detect the first situaitons of the game)
   obs = torch.zeros(num_videos,10,x_dim,y_dim)
-  #obs[:,0:10,:,:] = torch.clone(input[:,0+start_index:10+start_index,:,:])
   #Rand Start
   for k in range(num_videos):
-    obs[k,0:10:,:] = torch.clone(input[k,0+start_index[k]:10+start_index[k],:,:])
+    obs[k,0:10,:,:] = torch.clone(input[k,0+start_index[k]:10+start_index[k],:,:])
   obs = obs.to(device)
 
   # Start the game 
@@ -154,7 +153,6 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
         out = act + obs[:,9,:,:].unsqueeze(1)
   
       # Update Obs (change the game situation based on the action)
-      #obs[:,0:9,:,:] = torch.clone(input[:,i+1+start_index:i+10+start_index,:,:])
       #Rand Start
       for k in range(num_videos):
         obs[k,0:9,:,:] = torch.clone(input[k,i+1+start_index[k]:i+10+start_index[k],:,:])

@@ -154,7 +154,7 @@ def run_cfd(grifile,x_center=1.3,y_center=0.9,x_distri=50,y_distri=50,height_lev
 
     it = 0
     # Nt = 100
-    Tsim = SIM_TIME
+    Tsim = 0.5
     # rescheck = np.zeros(1)
     # df5 = pd.DataFrame();
     # df5 = df5.append(pd.DataFrame(rescheck));
@@ -239,7 +239,7 @@ def run_cfd(grifile,x_center=1.3,y_center=0.9,x_distri=50,y_distri=50,height_lev
         # df5 = df5.append(pd.DataFrame(rescheck));
 
 #        print("current time")
-        print(t[0])
+#        print(t[0])
         it += 1
 
     print("\n##### DONE #####\n")

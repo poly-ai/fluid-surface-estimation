@@ -21,31 +21,23 @@ from models.RL_CNN.resnet18 import ResNet18
 # Configuration
 #-------------------------------------------------------------------------------
 
-# Datasets
-CREATE_DATASET = False
-DATASET_FILENAME = 'wave-sine-omni.npy'
-# DATASET_FILENAME = 'wave-shallow.npy'
-# Options:  wave-sine-omni.npy
-#           wave-shallow.npy
-
-
 ### Configuration ###
-NUM_TRAIN_VIDEOS = 8
+NUM_TRAIN_VIDEOS = 10
 
 # Training Setup 
 # Label for training
-TRAIN_ID = "12.00"
+TRAIN_ID = "cnn-unnorm-shallow"
 # bool: Load pre-trained model
 ReTrain = False
 # If Retrain == true: set the pre-trained model path
 MODEL_LOAD_PATH = os.path.join(TRAINED_MODEL_DIR, 'RL/12.00.pt')
 
 TARGET_FRAME = 200
-isSave = True      # Set this to True if you want to Save Model and History
-NUM_EPOCH = 10000    # number of epochs
-RENDER_FREQ = 20   # render figures every () frames
-RENDER_EPOCH = 1000  # render figures every () epochs
-STOP_CRITERIA = 10000
+isSave = True        # Set this to True if you want to Save Model and History
+NUM_EPOCH = 5    # number of epochs
+RENDER_FREQ = 1     # print info every () frames
+RENDER_EPOCH = 1  # save train history every () epochs
+STOP_CRITERIA = 1000
 
 # Augmentation
 NUM_AFFINE_AUG = 0  
@@ -53,7 +45,7 @@ NUM_SUM_AUG = 0
 RANDOM_SEED = 0
 
 # RL Hyper Parameter 
-WEIGHT_PLAY = 20 # (default: 2)
+WEIGHT_PLAY = 20
 #############################################
 
 MODEL_BEST_SAVE = os.path.join(TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'.pt')             # best model
@@ -70,6 +62,7 @@ print("Train History Save path: ", TRAIN_HIST)
 #-------------------------------------------------------------------------------
 def main():
     # Create datasets
+    '''
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[0]):
         print(f"Creating raw dataset {config.DATASET_FILENAME[0]}")
         make_omni_wave_dataset(
@@ -86,22 +79,19 @@ def main():
             image_dimension=64,
             num_frames=1000,
         )
+    '''
 
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
         print(f"Creating raw dataset {config.DATASET_FILENAME[2]}")
-        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
+        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], num_videos = 10, slice=False)
      
     # Load data (0: Omni, 1: Circ, 2: Shallow)
     print("Loading dataset")
     dataset = np.load(config.DATASET_FILEPATH[2])
-    x_dim = dataset.shape[2]-1 
-    y_dim = dataset.shape[3]-1 
-    # cut 2 edges that have zero values 
-    dataset = dataset[0,:,1:x_dim+1,1:y_dim+1]
     print("raw dataset load successfully")
     print("raw dataset shape: ", dataset.shape)
 
-    return 0
+    #return 0
     
     # Data Augmentation
     print("Augmenting data")
@@ -113,11 +103,14 @@ def main():
     # Convert to PyTorch Tensor
     dataset = torch.from_numpy(np.float32(dataset))
     NUM_TOTAL_VIDEOS = dataset.shape[0]
+    NUM_VALID_VIDEOS = NUM_TOTAL_VIDEOS - NUM_TRAIN_VIDEOS
 
     # Pick Training Data
     pick = np.arange(NUM_TRAIN_VIDEOS)
     input_data_train = dataset[pick]
+    input_data_valid = dataset[NUM_TRAIN_VIDEOS:]
     print("train data shape: ", input_data_train.shape)
+    print("valid data shape: ", input_data_valid.shape)
 
     # Configure for CUDA
     print("Configuring PyTorch GPU usage")
@@ -125,13 +118,21 @@ def main():
     print("device:", device)
 
     # Create CNN Policy, Optimizer, Criterion Fcn
-    policy = ResNet18(x_dim,y_dim).to(device)
+    # frames_in=10, H_in=64, W_in=64,
+    #             kernels_1=30, pad_1=1, kern_sz_1=5, stride_1=1,
+    #             pool_sz_1=2,
+    #             kernels_2=60, pad_2=1, kern_sz_2=5, stride_2=1,
+    #             pool_sz_2=2,
+    #             h_3=4096, h_4=4096, frames_out=1)
+    policy = RL_CNN(H_in=178,W_in=118,h_4=178*118).to(device)
+    policy.apply(init_weights)
     optim = Adam(policy.parameters(), lr=1e-4)
     criterion = nn.MSELoss(reduction='mean')
 
     # Train
     train_RLCNN(policy, criterion, optim, input_data_train, MODEL_LOAD_PATH, MODEL_BEST_SAVE, MODEL_LAST_SAVE, TRAIN_HIST, STOP_CRITERIA,
-                ReTrain, NUM_TRAIN_VIDEOS, TARGET_FRAME, RENDER_FREQ, RENDER_EPOCH, NUM_EPOCH, device, WEIGHT_PLAY, isSave)
+                ReTrain, NUM_TRAIN_VIDEOS, TARGET_FRAME, RENDER_FREQ, RENDER_EPOCH, NUM_EPOCH, device, WEIGHT_PLAY, isSave,
+                input_data_valid, NUM_VALID_VIDEOS)
 
 
 if __name__ == '__main__':

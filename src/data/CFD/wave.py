@@ -116,7 +116,7 @@ def translate_cfd_to_grid(X, Y, H, unit):
     result = np.zeros((H.shape[1], floor(max(X) / unit), floor(max(Y) / unit)))
 
     for i in range(result.shape[1]):
-        print(f"{i} / {result.shape[1]}")
+#        print(f"{i} / {result.shape[1]}")
         for j in range(result.shape[2]):
             result[:, i, j] = triangle((i + 0.5) * unit, (j + 0.5) * unit)
 
