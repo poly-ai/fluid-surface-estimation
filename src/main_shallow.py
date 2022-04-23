@@ -22,7 +22,10 @@ from models.RL_CNN.resnet18 import ResNet18
 #-------------------------------------------------------------------------------
 
 ### Configuration ###
-NUM_TRAIN_VIDEOS = 10
+NUM_TOTAL_VIDEOS = 80
+NUM_TRAIN_VIDEOS = 60
+NUM_TEST_VIDEOS  = 10
+NUM_VALID_VIDEOS  = 10
 
 # Training Setup 
 # Label for training
@@ -83,7 +86,7 @@ def main():
 
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
         print(f"Creating raw dataset {config.DATASET_FILENAME[2]}")
-        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], num_videos = 40, slice=False)
+        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], num_videos = NUM_TOTAL_VIDEOS, slice=False)
      
     # Load data (0: Omni, 1: Circ, 2: Shallow)
     print("Loading dataset")
@@ -91,19 +94,15 @@ def main():
     print("raw dataset load successfully")
     print("raw dataset shape: ", dataset.shape)
 
-    #return 0
-    
-    # Data Augmentation
-    print("Augmenting data")
 
+    # Separate test data from dataset
+    dataset = dataset[0:NUM_TOTAL_VIDEOS-NUM_TEST_VIDEOS]
+    
     # Min and Max Check
-    print("dataset shape after augmentation:", dataset.shape)
     print("Min and Max check. Max: ", np.max(dataset), " Min: ", np.min(dataset))
     
     # Convert to PyTorch Tensor
     dataset = torch.from_numpy(np.float32(dataset))
-    NUM_TOTAL_VIDEOS = dataset.shape[0]
-    NUM_VALID_VIDEOS = NUM_TOTAL_VIDEOS - NUM_TRAIN_VIDEOS
 
     # Pick Training Data
     pick = np.arange(NUM_TRAIN_VIDEOS)

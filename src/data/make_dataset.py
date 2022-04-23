@@ -76,6 +76,7 @@ def make_cir_wave_dataset(output_filepath, image_dimension, num_frames):
 def make_cfd_wave_dataset(output_filepath, num_videos = 2, slice=True):
     path = Path(output_filepath)
     data = []
+    np.random.seed(0)
 
     for i in range(num_videos):
         #print(i)
