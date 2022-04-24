@@ -305,7 +305,8 @@ def render_predict(num_videos,step,step_error,epoch,out,input,start_index):
     error_txt = " Step: {:3d}".format(step) + '\nError: {:4.2f}'.format(step_error.item())
     fig, axs = plt.subplots(2, num_videos, figsize=(5,5))
     fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt + '\nPrediction v.s. CFD', fontdict = {'fontsize' : 7})
-    for video_index in range(2, num_videos):
+    num_videos = 5
+    for video_index in range(0,num_videos):
        target = input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy()
        minval = np.min(target[np.nonzero(target)])
        maxval = np.max(target[np.nonzero(target)])
