@@ -303,22 +303,16 @@ def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y
 
 def render_predict(num_videos,step,step_error,epoch,out,input,start_index):
     error_txt = " Step: {:3d}".format(step) + '\nError: {:4.2f}'.format(step_error.item())
-    fig, axs = plt.subplots(num_videos, 2, figsize=(5,5))
+    fig, axs = plt.subplots(2, num_videos, figsize=(5,5))
     fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt + '\nPrediction v.s. CFD', fontdict = {'fontsize' : 7})
-    for video_index in range(0, num_videos):
+    for video_index in range(2, num_videos):
        target = input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy()
        minval = np.min(target[np.nonzero(target)])
        maxval = np.max(target[np.nonzero(target)])
-       im = axs[video_index,0].imshow(out[video_index,0,:,:].detach().cpu().numpy(), cmap = "rainbow", vmin = minval, vmax = maxval)
-       im = axs[video_index,1].imshow(target, cmap = "rainbow", vmin = minval, vmax = maxval)
-       axs[video_index,0].axis('off')
-       axs[video_index,1].axis('off')
-       axs[video_index,0].set_title(str(step+10+start_index[video_index]),fontdict = {'fontsize' : 7})
+       im = axs[0,video_index].imshow(out[video_index,0,:,:].detach().cpu().numpy(), cmap = "rainbow", vmin = minval, vmax = maxval)
+       im = axs[1,video_index].imshow(target, cmap = "rainbow", vmin = minval, vmax = maxval)
+       axs[0, video_index].axis('off')
+       axs[1, video_index].axis('off')
+       axs[0, video_index].set_title(str(step+10+start_index[video_index]),fontdict = {'fontsize' : 7})
 
-    plt.subplots_adjust(left=0.1,
-                        bottom=0.1, 
-                        right=0.9, 
-                        top=0.9, 
-                        wspace=0.1, 
-                        hspace=0.4)
     plt.show()
