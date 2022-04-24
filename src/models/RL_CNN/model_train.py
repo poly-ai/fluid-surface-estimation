@@ -169,7 +169,7 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
       # logging the error 
       if i%renderfreq == 0 and render == True:
         print("step: ",i,"\tstep error {0:4.5f}".format(step_error.item()))
-        #render_predict(num_videos,i,step_error,epoch,out,input,start_index) 
+        render_predict(num_videos,i,step_error,epoch,out,input,start_index) 
 
       # Each Prediction Step
       i = i+1
@@ -306,8 +306,11 @@ def render_predict(num_videos,step,step_error,epoch,out,input,start_index):
     fig, axs = plt.subplots(num_videos, 2, figsize=(5,5))
     fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt + '\nPrediction v.s. CFD', fontdict = {'fontsize' : 7})
     for video_index in range(0, num_videos):
-       im = axs[video_index,0].imshow(out[video_index,0,:,:].detach().cpu().numpy(), cmap = "gray")
-       im = axs[video_index,1].imshow(input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy(), cmap = "gray")
+       target = input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy()
+       minval = np.min(target[np.nonzero(target)])
+       maxval = np.max(target[np.nonzero(target)])
+       im = axs[video_index,0].imshow(out[video_index,0,:,:].detach().cpu().numpy(), cmap = "rainbow", vmin = minval, vmax = maxval)
+       im = axs[video_index,1].imshow(target, cmap = "rainbow", vmin = minval, vmax = maxval)
        axs[video_index,0].axis('off')
        axs[video_index,1].axis('off')
        axs[video_index,0].set_title(str(step+10+start_index[video_index]),fontdict = {'fontsize' : 7})
