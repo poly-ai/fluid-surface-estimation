@@ -304,13 +304,14 @@ def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y
 def render_predict(num_videos,step,step_error,epoch,out,input,start_index):
     num_videos = 10
     error_txt = " Step: {:3d}".format(step) + '\nError: {:4.2f}'.format(step_error.item())
-    fig, axs = plt.subplots(2, num_videos, figsize=(10,5))
+    fig, axs = plt.subplots(2, num_videos, figsize=(15,5))
     fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt, fontdict = {'fontsize' : 7})
     for video_index in range(num_videos):
        target = input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy()
-       minval = np.min(target[np.nonzero(target)])
-       maxval = np.max(target[np.nonzero(target)])
-       im = axs[0,video_index].imshow(out[video_index,0,:,:].detach().cpu().numpy(), cmap = "rainbow", vmin = minval, vmax = maxval)
+       predict = out[video_index,0,:,:].detach().cpu().numpy()
+       minval = np.min(predict[np.nonzero(predict)])
+       maxval = np.max(predict[np.nonzero(predict)])
+       im = axs[0,video_index].imshow(predict, cmap = "rainbow", vmin = minval, vmax = maxval)
        im = axs[1,video_index].imshow(target, cmap = "rainbow", vmin = minval, vmax = maxval)
        axs[0, video_index].axis('off')
        axs[1, video_index].axis('off')
