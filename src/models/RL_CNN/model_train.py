@@ -169,7 +169,7 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
       # logging the error 
       if i%renderfreq == 0 and render == True:
         print("step: ",i,"\tstep error {0:4.5f}".format(step_error.item()))
-        #render_predict(num_videos,i,step_error,epoch,out,input,start_index) 
+        render_predict(num_videos,i,step_error,epoch,out,input,start_index) 
 
       # Each Prediction Step
       i = i+1
@@ -302,20 +302,19 @@ def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y
 
 
 def render_predict(num_videos,step,step_error,epoch,out,input,start_index):
+    num_videos = 10
     error_txt = " Step: {:3d}".format(step) + '\nError: {:4.2f}'.format(step_error.item())
-    fig, axs = plt.subplots(num_videos, 2, figsize=(5,5))
-    fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt + '\nPrediction v.s. CFD', fontdict = {'fontsize' : 7})
-    for video_index in range(0, num_videos):
-       im = axs[video_index,0].imshow(out[video_index,0,:,:].detach().cpu().numpy(), cmap = "gray")
-       im = axs[video_index,1].imshow(input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy(), cmap = "gray")
-       axs[video_index,0].axis('off')
-       axs[video_index,1].axis('off')
-       axs[video_index,0].set_title(str(step+10+start_index[video_index]),fontdict = {'fontsize' : 7})
+    fig, axs = plt.subplots(2, num_videos, figsize=(15,5))
+    fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt, fontdict = {'fontsize' : 7})
+    for video_index in range(num_videos):
+       target = input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy()
+       predict = out[video_index,0,:,:].detach().cpu().numpy()
+       minval = np.min(predict[np.nonzero(predict)])
+       maxval = np.max(predict[np.nonzero(predict)])
+       im = axs[0,video_index].imshow(predict, cmap = "rainbow", vmin = minval, vmax = maxval)
+       im = axs[1,video_index].imshow(target, cmap = "rainbow", vmin = minval, vmax = maxval)
+       axs[0, video_index].axis('off')
+       axs[1, video_index].axis('off')
+       axs[0, video_index].set_title(str(step+10+start_index[video_index]),fontdict = {'fontsize' : 7})
 
-    plt.subplots_adjust(left=0.1,
-                        bottom=0.1, 
-                        right=0.9, 
-                        top=0.9, 
-                        wspace=0.1, 
-                        hspace=0.4)
     plt.show()

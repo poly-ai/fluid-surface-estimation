@@ -11,7 +11,7 @@ from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
 import config
 from data.make_dataset import make_cfd_wave_dataset, make_omni_wave_dataset, make_cir_wave_dataset
 from data.augmentation import aug_random_affine_norm, aug_add_random_pairs, augment
-from models.RL_CNN.cnn_deep import *
+from models.RL_CNN.cnn import *
 from models.RL_CNN.model_train import *
 from models.RL_CNN.resnet18 import ResNet18
 
@@ -23,13 +23,13 @@ from models.RL_CNN.resnet18 import ResNet18
 
 ### Configuration ###
 NUM_TOTAL_VIDEOS = 80
-NUM_TRAIN_VIDEOS = 60
-NUM_TEST_VIDEOS  = 10
-NUM_VALID_VIDEOS  = 10
+NUM_TRAIN_VIDEOS = 50
+NUM_TEST_VIDEOS  = 5
+NUM_VALID_VIDEOS  = 25
 
 # Training Setup 
 # Label for training
-TRAIN_ID = "cnn-unnorm-shallow-1"
+TRAIN_ID = "resnet-shallow-3"
 # bool: Load pre-trained model
 ReTrain = False
 # If Retrain == true: set the pre-trained model path
@@ -37,10 +37,10 @@ MODEL_LOAD_PATH = os.path.join(TRAINED_MODEL_DIR, 'RL/12.00.pt')
 
 TARGET_FRAME = 200
 isSave = True        # Set this to True if you want to Save Model and History
-NUM_EPOCH = 50000    # number of epochs
+NUM_EPOCH = 100000    # number of epochs
 RENDER_FREQ = 10     # print info every () frames
-RENDER_EPOCH = 50  # save train history every () epochs
-STOP_CRITERIA = 10000
+RENDER_EPOCH = 1000  # save train history every () epochs
+STOP_CRITERIA = 1000
 
 # Augmentation
 NUM_AFFINE_AUG = 0  
@@ -48,7 +48,7 @@ NUM_SUM_AUG = 0
 RANDOM_SEED = 0
 
 # RL Hyper Parameter 
-WEIGHT_PLAY = 20
+WEIGHT_PLAY = 1
 #############################################
 
 MODEL_BEST_SAVE = os.path.join(TRAINED_MODEL_DIR, 'RL/'+TRAIN_ID+'.pt')             # best model
@@ -123,7 +123,8 @@ def main():
     #             kernels_2=60, pad_2=1, kern_sz_2=5, stride_2=1,
     #             pool_sz_2=2,
     #             h_3=4096, h_4=4096, frames_out=1)
-    policy = RL_CNN_DEEP(H_in=88,W_in=58,h_6=88*58).to(device)
+    #policy = RL_CNN(H_in=88,W_in=58,h_4=88*58).to(device)
+    policy = ResNet18(88,58).to(device)
     policy.apply(init_weights)
     optim = Adam(policy.parameters(), lr=1e-4)
     criterion = nn.MSELoss(reduction='mean')
