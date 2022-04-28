@@ -116,15 +116,15 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
   
   ### Setup ###
   WEIGHT_PLAY = weight_play
+  num_frames = input.shape[1]
 
   # IsStop: flag to indicate when the cumulative error exceeds stop_criteria
   # IsDone: flag to indicate the epoch is done and the policy is updated
 
   # Choose the starting index (choose which "level" to start the game)
   if start_index == -1:
-    #start_index = np.random.randint(0,1000-target_frame)
     #Rand Start
-    start_index = np.random.randint(0,1000-target_frame-20, size=num_videos)
+    start_index = np.random.randint(0,num_frames-target_frame-20, size = num_videos)
   if render:
     print("\ncheck epoch: ", epoch)
     #print("start index: ", start_index)
@@ -137,10 +137,9 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
 
   # Obtain the first ten frames (Detect the first situaitons of the game)
   obs = torch.zeros(num_videos,10,x_dim,y_dim)
-  #obs[:,0:10,:,:] = torch.clone(input[:,0+start_index:10+start_index,:,:])
   #Rand Start
   for k in range(num_videos):
-    obs[k,0:10:,:] = torch.clone(input[k,0+start_index[k]:10+start_index[k],:,:])
+    obs[k,0:10,:,:] = torch.clone(input[k,0+start_index[k]:10+start_index[k],:,:])
   obs = obs.to(device)
 
   # Start the game 
@@ -154,7 +153,6 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
         out = act + obs[:,9,:,:].unsqueeze(1)
   
       # Update Obs (change the game situation based on the action)
-      #obs[:,0:9,:,:] = torch.clone(input[:,i+1+start_index:i+10+start_index,:,:])
       #Rand Start
       for k in range(num_videos):
         obs[k,0:9,:,:] = torch.clone(input[k,i+1+start_index[k]:i+10+start_index[k],:,:])
@@ -171,7 +169,7 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
       # logging the error 
       if i%renderfreq == 0 and render == True:
         print("step: ",i,"\tstep error {0:4.5f}".format(step_error.item()))
-        #render_predict(num_videos,i,step_error,epoch,out,input,start_index) 
+        render_predict(num_videos,i,step_error,epoch,out,input,start_index) 
 
       # Each Prediction Step
       i = i+1
@@ -244,16 +242,19 @@ def train_epoch(x_dim, y_dim, policy, criterion, optim, epoch, input, num_videos
 
 # 0416
 def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y_dim, target_frame, WEIGHT_PLAY, criterion):
+    # Setup
+    num_frames = data_val.shape[1]
+
     # Init
     IsStop = False
     step_error = 0
     i = 0 
     obs = torch.zeros(num_videos,10,x_dim,y_dim)
-    start_index = np.random.randint(0,1000-target_frame-20, size=num_videos)
+    start_index = np.random.randint(0,num_frames-target_frame-20, size=num_videos)
     
     #Rand Start
     for k in range(num_videos):
-      obs[k,0:10:,:] = torch.clone(data_val[k,0+start_index[k]:10+start_index[k],:,:])
+      obs[k,0:10,:,:] = torch.clone(data_val[k,0+start_index[k]:10+start_index[k],:,:])
     obs = obs.to(device)
 
     ##### 1. Playing Loop #####
@@ -301,20 +302,19 @@ def train_val_loss(data_val, num_videos, policy, stop_criteria, device, x_dim, y
 
 
 def render_predict(num_videos,step,step_error,epoch,out,input,start_index):
+    num_videos = 10
     error_txt = " Step: {:3d}".format(step) + '\nError: {:4.2f}'.format(step_error.item())
-    fig, axs = plt.subplots(num_videos, 2, figsize=(5,5))
-    fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt + '\nPrediction v.s. CFD', fontdict = {'fontsize' : 7})
-    for video_index in range(0, num_videos):
-       im = axs[video_index,0].imshow(out[video_index,0,:,:].detach().cpu().numpy(), cmap = "gray")
-       im = axs[video_index,1].imshow(input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy(), cmap = "gray")
-       axs[video_index,0].axis('off')
-       axs[video_index,1].axis('off')
-       axs[video_index,0].set_title(str(step+10+start_index[video_index]),fontdict = {'fontsize' : 7})
+    fig, axs = plt.subplots(2, num_videos, figsize=(15,5))
+    fig.suptitle('Epoch: {:4d}'.format(epoch) + error_txt, fontdict = {'fontsize' : 7})
+    for video_index in range(num_videos):
+       target = input[video_index,step+10+start_index[video_index],:,:].detach().cpu().numpy()
+       predict = out[video_index,0,:,:].detach().cpu().numpy()
+       minval = np.min(predict[np.nonzero(predict)])
+       maxval = np.max(predict[np.nonzero(predict)])
+       im = axs[0,video_index].imshow(predict, cmap = "rainbow", vmin = minval, vmax = maxval)
+       im = axs[1,video_index].imshow(target, cmap = "rainbow", vmin = minval, vmax = maxval)
+       axs[0, video_index].axis('off')
+       axs[1, video_index].axis('off')
+       axs[0, video_index].set_title(str(step+10+start_index[video_index]),fontdict = {'fontsize' : 7})
 
-    plt.subplots_adjust(left=0.1,
-                        bottom=0.1, 
-                        right=0.9, 
-                        top=0.9, 
-                        wspace=0.1, 
-                        hspace=0.4)
     plt.show()

@@ -41,7 +41,7 @@ MODEL_LOAD_PATH = os.path.join(TRAINED_MODEL_DIR, 'RL/test.pt')
 
 TARGET_FRAME = 200
 isSave = True      # Set this to True if you want to Save Model and History
-NUM_EPOCH = 10    # number of epochs
+NUM_EPOCH = 5    # number of epochs
 RENDER_FREQ = 1   # render figures every () frames
 RENDER_EPOCH = 5  # render figures every () epochs
 STOP_CRITERIA = 1000
@@ -78,16 +78,16 @@ def main():
             wave_freq=1,
         )
 
-    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[1]):
-        print(f"Creating raw dataset {config.DATASET_FILENAME[1]}")
-        make_cir_wave_dataset(
-            output_filepath=config.DATASET_FILEPATH[1],
-            image_dimension=64,
-            num_frames=1000,
-        )
+    # if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[1]):
+    #     print(f"Creating raw dataset {config.DATASET_FILENAME[1]}")
+    #     make_cir_wave_dataset(
+    #         output_filepath=config.DATASET_FILEPATH[1],
+    #         image_dimension=64,
+    #         num_frames=1000,
+    #     )
 
-    if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
-        make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
+    # if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[2]):
+    #     make_cfd_wave_dataset(output_filepath=config.DATASET_FILEPATH[2], slice=False)
 
     if config.CREATE_DATASET or not os.path.exists(config.DATASET_FILEPATH[3]):
         make_von_karman_dataset(output_filepath=config.DATASET_FILEPATH[3])
@@ -125,7 +125,7 @@ def main():
     print("device:", device)
 
     # Create CNN Policy, Optimizer, Criterion Fcn
-    policy = Net().to(device)
+    policy = RL_CNN().to(device)
     policy.apply(init_weights)
     optim = Adam(policy.parameters(), lr=1e-4)
     criterion = nn.MSELoss(reduction='mean')

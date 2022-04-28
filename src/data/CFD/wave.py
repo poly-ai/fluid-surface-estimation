@@ -116,15 +116,16 @@ def translate_cfd_to_grid(X, Y, H, unit):
     result = np.zeros((H.shape[1], floor(max(X) / unit), floor(max(Y) / unit)))
 
     for i in range(result.shape[1]):
-        print(f"{i} / {result.shape[1]}")
+#        print(f"{i} / {result.shape[1]}")
         for j in range(result.shape[2]):
             result[:, i, j] = triangle((i + 0.5) * unit, (j + 0.5) * unit)
 
     return result
 
 
-def generate_cfd_data():
-    data, xy, time = run_cfd("src/data/CFD/tank1.gri")
+def generate_cfd_data(x_center,y_center,x_distri,y_distri,height_level,height_delta):
+    #data, xy, time = run_cfd("src/data/CFD/tank1.gri",x_center,y_center,x_distri,y_distri,height_level,height_delta)
+    data, xy, time = run_cfd("src/data/CFD/tank0.gri",x_center,y_center,x_distri,y_distri,height_level,height_delta)
 
     x = xy[:, 0]
     y = xy[:, 1]

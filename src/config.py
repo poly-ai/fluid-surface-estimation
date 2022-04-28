@@ -1,6 +1,6 @@
 import os
 from definitions import DATA_RAW_DIR, TRAINED_MODEL_DIR
-from src.data.wave_adv_omi import IMAGE_DIMENSION
+from data.wave_adv_omi import IMAGE_DIMENSION
 
 # Configuration file for driver program in main.py
 # Ensure these settings are correct before beginning training...
