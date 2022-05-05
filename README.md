@@ -5,14 +5,14 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/poly-ai/fluid-surface-estimation?style=for-the-badge)
 
 <div>
-  <img src='./animations/65-pred.gif' style='display: inline-block; width: 200px;'>
-  <img src='./animations/66-pred.gif' style='display: inline-block; width: 200px;'>
-  <img src='./animations/71-pred.gif' style='display: inline-block; width: 200px;'>
+  <img src='./animations/65-pred.gif' style='display: inline-block; width: 160px;'>
+  <img src='./animations/66-pred.gif' style='display: inline-block; width: 160px;'>
+  <img src='./animations/71-pred.gif' style='display: inline-block; width: 160px;'>
 </div>
 <div>
-  <img src='./animations/65-target.gif' style='display: inline-block; width: 200px;'>
-  <img src='./animations/66-target.gif' style='display: inline-block; width: 200px;'>
-  <img src='./animations/71-target.gif' style='display: inline-block; width: 200px;'>
+  <img src='./animations/65-target.gif' style='display: inline-block; width: 160px;'>
+  <img src='./animations/66-target.gif' style='display: inline-block; width: 160px;'>
+  <img src='./animations/71-target.gif' style='display: inline-block; width: 160px;'>
 </div>
 
 Fluid surface height estimation outputs a predicted sequence of heightmaps.
